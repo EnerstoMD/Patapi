@@ -4,7 +4,7 @@ type Patient struct {
 	Id             *string `json:"id" sql:"id"`
 	Oid            *string `json:"oid" sql:"oid"`
 	Name           *string `json:"name" sql:"name"`
-	Firstnames     *string `json:"firstnames" db:"firstnames"`
+	Firstnames     *string `json:"firstnames" sql:"firstnames"`
 	Lastname       *string `json:"lastname" sql:"lastname"`
 	Birthname      *string `json:"birthname" sql:"birthname"`
 	Gender         *string `json:"gender" sql:"gender"`
