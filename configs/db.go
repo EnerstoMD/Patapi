@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"lupus/patapi/models"
+	"lupus/patapi/utils"
 	"os"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -17,7 +18,6 @@ type PostgreSQL struct {
 
 func NewConnect() (*PostgreSQL, error) {
 	dbURL := "postgres://" + os.Getenv("DBUSER") + ":" + os.Getenv("DBPASSWORD") + "@" + os.Getenv("DBHOST") + ":" + os.Getenv("DBPORT") + "/" + os.Getenv("DBNAME")
-	//conn, err := pgx.Connect(context.Background(), dbURL)
 	conn, err := sqlx.Open("pgx", dbURL)
 	if conn == nil || err != nil {
 		log.Fatalf("Failed to connect to db")
@@ -28,8 +28,7 @@ func NewConnect() (*PostgreSQL, error) {
 }
 
 func (p *PostgreSQL) GetAllPatients(ctx context.Context) (patients []models.Patient, err error) {
-	query := fmt.Sprintf("select * from people")
-	log.Println("query:", query)
+	query := fmt.Sprintf("select * from patient")
 	defer p.dbConn.Close()
 
 	rows, err := p.dbConn.Queryx(query)
@@ -40,4 +39,15 @@ func (p *PostgreSQL) GetAllPatients(ctx context.Context) (patients []models.Pati
 		patients = append(patients, patient)
 	}
 	return patients, err
+}
+
+func (p *PostgreSQL) CreatePatient(ctx context.Context, patient models.Patient) error {
+	query, err := utils.PrepareSQLInsertStatement(patient)
+	if err != nil {
+		return err
+	}
+	tx, err := p.dbConn.Begin()
+	_, err = tx.Exec(query)
+	err = tx.Commit()
+	return err
 }
