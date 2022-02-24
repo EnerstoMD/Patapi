@@ -14,9 +14,8 @@ func PrepareSQLInsertStatement(T interface{}) (string, error) {
 		if valueptr.Kind() == reflect.Ptr {
 			valueptr = valueptr.Elem()
 		}
-
 		value := `'` + valueptr.String() + `'`
-		arg, filled := t.Field(i).Tag.Lookup("sql")
+		arg, filled := t.Field(i).Tag.Lookup("db")
 		if !filled || !valueptr.IsValid() {
 			continue
 		}
