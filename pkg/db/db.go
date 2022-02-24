@@ -17,6 +17,7 @@ type dbRepository struct {
 type DbRepository interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, patient model.Patient) error
+	GetPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 }
 
 func NewDbConnect() *dbRepository {
@@ -34,7 +35,6 @@ func NewDbConnect() *dbRepository {
 func (repo *dbRepository) GetAllPatients(ctx *gin.Context) (patients []model.Patient, err error) {
 	query := "select * from patient"
 	//defer repo.dbConn.Close()
-
 	rows, err := repo.dbConn.Queryx(query)
 	//defer rows.Close()
 	for rows.Next() {
@@ -68,4 +68,19 @@ func (repo *dbRepository) CreatePatient(ctx *gin.Context, patient model.Patient)
 		return err
 	}
 	return err
+}
+
+func (repo *dbRepository) GetPatientByName(c *gin.Context, nameOrId string) (patients []model.Patient, err error) {
+	query := `SELECT * FROM patient WHERE (name LIKE '%` + nameOrId + `%' OR lastname LIKE '%` + nameOrId + `%')`
+	//log.Println("query:", query)
+	rows, err := repo.dbConn.Queryx(query)
+	//rows, err := repo.dbConn.NamedQuery(`SELECT * FROM patient WHERE name=:name`, nameOrId)
+
+	//defer rows.Close()
+	for rows.Next() {
+		patient := model.Patient{}
+		err = rows.StructScan(&patient)
+		patients = append(patients, patient)
+	}
+	return patients, err
 }

@@ -11,6 +11,7 @@ import (
 type PatientHandler interface {
 	GetAllPatients(ctx *gin.Context)
 	CreatePatient(ctx *gin.Context)
+	GetPatientByName(ctx *gin.Context)
 }
 
 type patientHandler struct {
@@ -46,4 +47,15 @@ func (patientHandler *patientHandler) CreatePatient(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "insert OK"})
+}
+
+func (patientHandler *patientHandler) GetPatientByName(c *gin.Context) {
+	nameOrId := c.Param("name")
+	patients, err := patientHandler.patienfileService.GetPatientByName(c, nameOrId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get all patients", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, patients)
+	return
 }
