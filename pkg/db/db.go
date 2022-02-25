@@ -5,6 +5,7 @@ import (
 	"lupus/patapi/pkg/model"
 	"lupus/patapi/utils"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -17,7 +18,7 @@ type dbRepository struct {
 type DbRepository interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, patient model.Patient) error
-	GetPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
+	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 }
 
 func NewDbConnect() *dbRepository {
@@ -70,11 +71,14 @@ func (repo *dbRepository) CreatePatient(ctx *gin.Context, patient model.Patient)
 	return err
 }
 
-func (repo *dbRepository) GetPatientByName(c *gin.Context, nameOrId string) (patients []model.Patient, err error) {
+func (repo *dbRepository) SearchPatientByName(c *gin.Context, nameOrId string) (patients []model.Patient, err error) {
 	query := `SELECT * FROM patient WHERE (name LIKE '%` + nameOrId + `%' OR lastname LIKE '%` + nameOrId + `%')`
-	//log.Println("query:", query)
+	if numSecu, err := strconv.Atoi(nameOrId); err == nil && numSecu > 99999999999999 {
+		query = `SELECT * FROM patient WHERE ins_matricule=` + nameOrId
+	}
+
 	rows, err := repo.dbConn.Queryx(query)
-	//rows, err := repo.dbConn.NamedQuery(`SELECT * FROM patient WHERE name=:name`, nameOrId)
+	//rows, err := repo.dbConn.NamedQuery(`SELECT * FROM patient WHERE name =:nameOrId`, nameOrId)
 
 	//defer rows.Close()
 	for rows.Next() {

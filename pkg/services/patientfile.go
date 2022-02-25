@@ -9,12 +9,12 @@ import (
 type Service interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, p model.Patient) error
-	GetPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
+	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, p model.Patient) error
-	GetPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
+	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 }
 
 type service struct {
@@ -33,6 +33,6 @@ func (s *service) CreatePatient(c *gin.Context, p model.Patient) error {
 	return s.d.CreatePatient(c, p)
 }
 
-func (s *service) GetPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error) {
-	return s.d.GetPatientByName(c, nameOrId)
+func (s *service) SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error) {
+	return s.d.SearchPatientByName(c, nameOrId)
 }
