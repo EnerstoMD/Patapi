@@ -19,6 +19,7 @@ type DbRepository interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, patient model.Patient) error
 	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
+	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 }
 
 func NewDbConnect() *dbRepository {
@@ -87,4 +88,9 @@ func (repo *dbRepository) SearchPatientByName(c *gin.Context, nameOrId string) (
 		patients = append(patients, patient)
 	}
 	return patients, err
+}
+
+func (repo *dbRepository) GetPatientById(c *gin.Context, id string) (patient model.Patient, err error) {
+	err = repo.dbConn.Get(&patient, "SELECT * FROM patient WHERE id=$1", id)
+	return patient, err
 }

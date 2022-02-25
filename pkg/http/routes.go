@@ -11,7 +11,8 @@ func InitRoutes(router *gin.Engine, ph PatientHandler) {
 	router.NoRoute(notFound)
 	router.GET("/patients", ph.GetAllPatients)
 	router.POST("/patients", ph.CreatePatient)
-	router.GET("/patients/search/:name", ph.SearchPatientByName)
+	router.GET("/patients/search", ph.SearchPatientByName)
+	router.GET("/patients/:id", ph.GetPatientById)
 }
 
 func welcome(c *gin.Context) {

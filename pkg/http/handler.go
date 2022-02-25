@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"lupus/patapi/pkg/model"
 	patientfile "lupus/patapi/pkg/services"
 	"net/http"
@@ -12,6 +13,7 @@ type PatientHandler interface {
 	GetAllPatients(ctx *gin.Context)
 	CreatePatient(ctx *gin.Context)
 	SearchPatientByName(ctx *gin.Context)
+	GetPatientById(ctx *gin.Context)
 }
 
 type patientHandler struct {
@@ -50,12 +52,28 @@ func (patientHandler *patientHandler) CreatePatient(c *gin.Context) {
 }
 
 func (patientHandler *patientHandler) SearchPatientByName(c *gin.Context) {
-	nameOrId := c.Param("name")
+	nameOrId := c.Query("name")
+	log.Println("nameorid:", nameOrId)
 	patients, err := patientHandler.patienfileService.SearchPatientByName(c, nameOrId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get all patients", "error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, patients)
+	return
+}
+
+func (patientHandler *patientHandler) GetPatientById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	patient, err := patientHandler.patienfileService.GetPatientById(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get this patient", "error": err.Error()})
+		return
+	}
+	if patient.Id == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": 404, "msg": "Patient not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, patient)
 	return
 }
