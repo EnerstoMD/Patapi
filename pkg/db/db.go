@@ -20,6 +20,7 @@ type DbRepository interface {
 	CreatePatient(c *gin.Context, patient model.Patient) error
 	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
+	UpdatePatient(c *gin.Context, p model.Patient) error
 }
 
 func NewDbConnect() *dbRepository {
@@ -93,4 +94,28 @@ func (repo *dbRepository) SearchPatientByName(c *gin.Context, nameOrId string) (
 func (repo *dbRepository) GetPatientById(c *gin.Context, id string) (patient model.Patient, err error) {
 	err = repo.dbConn.Get(&patient, "SELECT * FROM patient WHERE id=$1", id)
 	return patient, err
+}
+
+func (repo *dbRepository) UpdatePatient(c *gin.Context, patient model.Patient) error {
+	query, err := utils.PrepareSQLUpdateStatement(patient, *patient.Id)
+
+	if err != nil {
+		return err
+	}
+	tx, err := repo.dbConn.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	if _, err = tx.Exec(query); err != nil {
+		return err
+	}
+	return err
 }

@@ -13,6 +13,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler) {
 	router.POST("/patients", ph.CreatePatient)
 	router.GET("/patients/search", ph.SearchPatientByName)
 	router.GET("/patients/:id", ph.GetPatientById)
+	router.PATCH("patients/:id", ph.UpdatePatient)
 }
 
 func welcome(c *gin.Context) {

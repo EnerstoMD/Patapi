@@ -14,6 +14,7 @@ type PatientHandler interface {
 	CreatePatient(ctx *gin.Context)
 	SearchPatientByName(ctx *gin.Context)
 	GetPatientById(ctx *gin.Context)
+	UpdatePatient(ctx *gin.Context)
 }
 
 type patientHandler struct {
@@ -76,4 +77,22 @@ func (patientHandler *patientHandler) GetPatientById(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, patient)
 	return
+}
+
+func (ph *patientHandler) UpdatePatient(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var patientToUpdate model.Patient
+	if err := ctx.BindJSON(&patientToUpdate); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient", "error": err.Error()})
+		return
+	}
+	if patientToUpdate.Id == nil {
+		patientToUpdate.Id = &id
+	}
+	err := ph.patienfileService.UpdatePatient(ctx, patientToUpdate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't insert patient into db", "error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Patient updated"})
 }
