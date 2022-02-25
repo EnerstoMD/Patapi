@@ -46,7 +46,7 @@ func (patientHandler *patientHandler) CreatePatient(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't insert patient into db", "error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "insert OK"})
+	c.JSON(http.StatusCreated, gin.H{"status": 201, "msg": "Patient registered"})
 }
 
 func (patientHandler *patientHandler) SearchPatientByName(c *gin.Context) {
