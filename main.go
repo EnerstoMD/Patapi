@@ -6,6 +6,7 @@ import (
 	handler "lupus/patapi/pkg/http"
 	patientfile "lupus/patapi/pkg/services"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -19,12 +20,9 @@ func main() {
 	patientlister := patientfile.NewService(patientfile.NewService(db.NewDbConnect()))
 	ph := handler.NewHandler(patientlister)
 
-	//patientHandler := handler.NewHandler(patientfile.NewService(db.NewDbConnect()))
-
 	router := gin.Default()
+	//cors shouldnot be allowing every orign
+	router.Use(cors.Default())
 	handler.InitRoutes(router, ph)
-	router.Run(":4545") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-	// psql, err := config.NewConnect()
-	// fmt.Println("psql", psql)
-	// fmt.Println(psql.GetAllPatients(context.TODO()))
+	router.Run(":4545") // listen and serve on 0.0.0.0:4545
 }

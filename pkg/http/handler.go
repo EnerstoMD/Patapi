@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"lupus/patapi/pkg/model"
 	patientfile "lupus/patapi/pkg/services"
 	"net/http"
@@ -53,8 +52,22 @@ func (patientHandler *patientHandler) CreatePatient(c *gin.Context) {
 }
 
 func (patientHandler *patientHandler) SearchPatientByName(c *gin.Context) {
+	// var searchedPatient model.Patient
+	// if err := c.BindJSON(&searchedPatient); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient", "error": err.Error()})
+	// 	return
+	// }
 	nameOrId := c.Query("name")
-	log.Println("nameorid:", nameOrId)
+	//var nameOrId string
+
+	// switch {
+	// case *searchedPatient.Name != "":
+	// 	nameOrId = *searchedPatient.Name
+	// case *searchedPatient.Lastname != "":
+	// 	nameOrId = *searchedPatient.Lastname
+	// case *searchedPatient.InsMatricule != "":
+	// 	nameOrId = *searchedPatient.InsMatricule
+	// }
 	patients, err := patientHandler.patienfileService.SearchPatientByName(c, nameOrId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get all patients", "error": err.Error()})

@@ -81,7 +81,6 @@ func (repo *dbRepository) SearchPatientByName(c *gin.Context, nameOrId string) (
 
 	rows, err := repo.dbConn.Queryx(query)
 	//rows, err := repo.dbConn.NamedQuery(`SELECT * FROM patient WHERE name =:nameOrId`, nameOrId)
-
 	//defer rows.Close()
 	for rows.Next() {
 		patient := model.Patient{}

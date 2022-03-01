@@ -19,7 +19,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler) {
 func welcome(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  200,
-		"message": "Welcome To API",
+		"message": "Welcome To PATIENTAPI",
 	})
 	return
 }
