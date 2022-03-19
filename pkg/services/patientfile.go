@@ -12,6 +12,7 @@ type Service interface {
 	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
+	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -19,6 +20,7 @@ type Db interface {
 	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
+	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
 }
 
 type service struct {
@@ -47,4 +49,8 @@ func (s *service) GetPatientById(c *gin.Context, id string) (model.Patient, erro
 
 func (s *service) UpdatePatient(c *gin.Context, p model.Patient) error {
 	return s.d.UpdatePatient(c, p)
+}
+
+func (s *service) SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error) {
+	return s.d.SearchPatientByINSMatricule(c, id)
 }

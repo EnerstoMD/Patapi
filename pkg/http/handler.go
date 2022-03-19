@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"lupus/patapi/pkg/model"
 	patientfile "lupus/patapi/pkg/services"
 	"net/http"
@@ -14,6 +15,7 @@ type PatientHandler interface {
 	SearchPatientByName(ctx *gin.Context)
 	GetPatientById(ctx *gin.Context)
 	UpdatePatient(ctx *gin.Context)
+	SearchPatientByINSMatricule(c *gin.Context)
 }
 
 type patientHandler struct {
@@ -58,6 +60,11 @@ func (patientHandler *patientHandler) SearchPatientByName(c *gin.Context) {
 	// 	return
 	// }
 	nameOrId := c.Query("name")
+	log.Println("nameOrId: ", nameOrId)
+	if nameOrId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "no patient searched"})
+		return
+	}
 	//var nameOrId string
 
 	// switch {
@@ -108,4 +115,24 @@ func (ph *patientHandler) UpdatePatient(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Patient updated"})
+}
+
+func (patientHandler *patientHandler) SearchPatientByINSMatricule(c *gin.Context) {
+	id := c.Query("ins")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "no patient searched"})
+		return
+	}
+
+	patients, err := patientHandler.patienfileService.SearchPatientByINSMatricule(c, id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get all patients", "error": err.Error()})
+		return
+	}
+	if len(patients) == 0 {
+		c.JSON(http.StatusNoContent, gin.H{"status": 204, "message": "no patient found"})
+		return
+	}
+	c.JSON(http.StatusOK, patients)
+	return
 }

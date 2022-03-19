@@ -21,6 +21,7 @@ type DbRepository interface {
 	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
+	SearchPatientByINSMatricule(c *gin.Context, nameOrId string) (patients []model.Patient, err error)
 }
 
 func NewDbConnect() *dbRepository {
@@ -82,6 +83,7 @@ func (repo *dbRepository) SearchPatientByName(c *gin.Context, nameOrId string) (
 	rows, err := repo.dbConn.Queryx(query)
 	//rows, err := repo.dbConn.NamedQuery(`SELECT * FROM patient WHERE name =:nameOrId`, nameOrId)
 	//defer rows.Close()
+	log.Println("query: ", query)
 	for rows.Next() {
 		patient := model.Patient{}
 		err = rows.StructScan(&patient)
@@ -117,4 +119,21 @@ func (repo *dbRepository) UpdatePatient(c *gin.Context, patient model.Patient) e
 		return err
 	}
 	return err
+}
+
+func (repo *dbRepository) SearchPatientByINSMatricule(c *gin.Context, id string) (patients []model.Patient, err error) {
+	// numSecu, err := strconv.Atoi(id)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	query := `SELECT * FROM patient WHERE ins_matricule LIKE '` + id + `'`
+	rows, err := repo.dbConn.Queryx(query)
+	// rows, err := repo.dbConn.Queryx(query)
+	for rows.Next() {
+		patient := model.Patient{}
+		err = rows.StructScan(&patient)
+		patients = append(patients, patient)
+	}
+	return patients, err
 }

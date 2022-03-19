@@ -14,6 +14,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler) {
 	router.GET("/patients/search", ph.SearchPatientByName)
 	router.GET("/patients/:id", ph.GetPatientById)
 	router.PATCH("patients/:id", ph.UpdatePatient)
+	router.GET("/patients/ins", ph.SearchPatientByINSMatricule)
 }
 
 func welcome(c *gin.Context) {
