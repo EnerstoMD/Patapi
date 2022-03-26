@@ -4,9 +4,8 @@ import (
 	"log"
 	"lupus/patapi/pkg/db"
 	handler "lupus/patapi/pkg/http"
-	patientfile "lupus/patapi/pkg/services"
+	service "lupus/patapi/pkg/services"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -17,12 +16,16 @@ func main() {
 		log.Fatal("Error lodading .env file")
 	}
 
-	patientlister := patientfile.NewService(patientfile.NewService(db.NewDbConnect()))
-	ph := handler.NewHandler(patientlister)
+	dbConn := db.NewDbConnect()
+
+	patientlister := service.NewPatService(dbConn)
+	calEventLister := service.NewCalService(dbConn)
+	ph := handler.NewPatientHandler(patientlister)
+	ch := handler.NewCalendarHandler(calEventLister)
 
 	router := gin.Default()
 	//cors shouldnot be allowing every orign
-	router.Use(cors.Default())
-	handler.InitRoutes(router, ph)
+	router.SetTrustedProxies(nil)
+	handler.InitRoutes(router, ph, ch)
 	router.Run(":4545") // listen and serve on 0.0.0.0:4545
 }

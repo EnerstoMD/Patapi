@@ -3,7 +3,7 @@ package handler
 import (
 	"log"
 	"lupus/patapi/pkg/model"
-	patientfile "lupus/patapi/pkg/services"
+	service "lupus/patapi/pkg/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,13 +16,14 @@ type PatientHandler interface {
 	GetPatientById(ctx *gin.Context)
 	UpdatePatient(ctx *gin.Context)
 	SearchPatientByINSMatricule(c *gin.Context)
+	ReadCarteVitale(c *gin.Context)
 }
 
 type patientHandler struct {
-	patienfileService patientfile.Service
+	patienfileService service.PatService
 }
 
-func NewHandler(patientService patientfile.Service) PatientHandler {
+func NewPatientHandler(patientService service.PatService) PatientHandler {
 	return &patientHandler{
 		patienfileService: patientService,
 	}
@@ -35,7 +36,6 @@ func (patientHandler *patientHandler) GetAllPatients(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, patients)
-	return
 }
 
 func (patientHandler *patientHandler) CreatePatient(c *gin.Context) {
@@ -81,7 +81,6 @@ func (patientHandler *patientHandler) SearchPatientByName(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, patients)
-	return
 }
 
 func (patientHandler *patientHandler) GetPatientById(ctx *gin.Context) {
@@ -96,7 +95,6 @@ func (patientHandler *patientHandler) GetPatientById(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, patient)
-	return
 }
 
 func (ph *patientHandler) UpdatePatient(ctx *gin.Context) {
@@ -134,5 +132,19 @@ func (patientHandler *patientHandler) SearchPatientByINSMatricule(c *gin.Context
 		return
 	}
 	c.JSON(http.StatusOK, patients)
-	return
+}
+
+func (patientHandler *patientHandler) ReadCarteVitale(c *gin.Context) {
+	var searchedP model.CardPeek
+
+	if err := c.BindXML(&searchedP); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read xml", "error": err.Error()})
+		return
+	}
+	patient, err := patientHandler.patienfileService.ReadCarteVitale(c, searchedP)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get all patients", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, patient)
 }

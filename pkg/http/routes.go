@@ -3,18 +3,25 @@ package handler
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(router *gin.Engine, ph PatientHandler) {
+func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler) {
 	router.GET("/", welcome)
 	router.NoRoute(notFound)
-	router.GET("/patients", ph.GetAllPatients)
-	router.POST("/patients", ph.CreatePatient)
-	router.GET("/patients/search", ph.SearchPatientByName)
-	router.GET("/patients/:id", ph.GetPatientById)
-	router.PATCH("patients/:id", ph.UpdatePatient)
-	router.GET("/patients/ins", ph.SearchPatientByINSMatricule)
+	router.Use(cors.Default())
+
+	router.GET("v1/patients", ph.GetAllPatients)
+	router.POST("v1/patients", ph.CreatePatient)
+	router.GET("v1/patients/search", ph.SearchPatientByName)
+	router.GET("v1/patients/:id", ph.GetPatientById)
+	router.PATCH("v1/patients/:id", ph.UpdatePatient)
+	router.GET("v1/patients/ins", ph.SearchPatientByINSMatricule)
+	router.GET("v1/patients/card", ph.ReadCarteVitale)
+
+	router.GET("v1/calendar", ch.GetAllEvents)
+
 }
 
 func welcome(c *gin.Context) {
@@ -22,7 +29,6 @@ func welcome(c *gin.Context) {
 		"status":  200,
 		"message": "Welcome To PATIENTAPI",
 	})
-	return
 }
 
 func notFound(c *gin.Context) {
@@ -30,5 +36,4 @@ func notFound(c *gin.Context) {
 		"status":  404,
 		"message": "Route Not Found",
 	})
-	return
 }
