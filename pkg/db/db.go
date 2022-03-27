@@ -22,6 +22,8 @@ type DbRepository interface {
 	SearchPatientByINSMatricule(c *gin.Context, nameOrId string) (patients []model.Patient, err error)
 
 	GetAllEvents(c *gin.Context) ([]model.Event, error)
+	CreateEvent(c *gin.Context, e model.Event) error
+	UpdateEvent(c *gin.Context, e model.Event) error
 }
 
 func NewDbConnect() *dbRepository {

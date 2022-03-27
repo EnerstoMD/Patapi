@@ -21,6 +21,8 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler) {
 	router.GET("v1/patients/card", ph.ReadCarteVitale)
 
 	router.GET("v1/calendar", ch.GetAllEvents)
+	router.POST("v1/calendar", ch.CreateEvent)
+	router.PATCH("v1/calendar/:id", ch.UpdateEvent)
 
 }
 

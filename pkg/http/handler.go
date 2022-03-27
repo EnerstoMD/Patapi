@@ -109,7 +109,7 @@ func (ph *patientHandler) UpdatePatient(ctx *gin.Context) {
 	}
 	err := ph.patienfileService.UpdatePatient(ctx, patientToUpdate)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't insert patient into db", "error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't update patient into db", "error": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Patient updated"})
