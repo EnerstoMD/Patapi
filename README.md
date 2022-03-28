@@ -1,2 +1,4 @@
 # Patapi
-Test pour une api connectee ac postgres
+PatientAPI:
+
+api en golang connectee avec bdd postgres appelee par l'app Lupus
