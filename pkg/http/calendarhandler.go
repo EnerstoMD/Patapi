@@ -12,6 +12,8 @@ type CalendarHandler interface {
 	GetAllEvents(ctx *gin.Context)
 	CreateEvent(ctx *gin.Context)
 	UpdateEvent(ctx *gin.Context)
+	DeleteEvent(ctx *gin.Context)
+	ConfirmEvent(ctx *gin.Context)
 }
 
 type calendarHandler struct {
@@ -63,4 +65,34 @@ func (calendarHandler *calendarHandler) UpdateEvent(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Event updated"})
 
+}
+
+func (calendarHandler *calendarHandler) DeleteEvent(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": 400, "msg": "id not filled"})
+		return
+	}
+
+	err := calendarHandler.calendarService.DeleteEvent(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't delete event-id:" + id, "error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "Event deleted"})
+}
+
+func (calendarHandler *calendarHandler) ConfirmEvent(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": 400, "msg": "id not filled"})
+		return
+	}
+
+	err := calendarHandler.calendarService.ConfirmEvent(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't confirm event-id:" + id, "error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "Event confirmed"})
 }

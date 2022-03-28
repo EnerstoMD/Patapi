@@ -24,6 +24,8 @@ type DbRepository interface {
 	GetAllEvents(c *gin.Context) ([]model.Event, error)
 	CreateEvent(c *gin.Context, e model.Event) error
 	UpdateEvent(c *gin.Context, e model.Event) error
+	DeleteEvent(ctx *gin.Context, id string) error
+	ConfirmEvent(ctx *gin.Context, id string) error
 }
 
 func NewDbConnect() *dbRepository {
@@ -36,4 +38,24 @@ func NewDbConnect() *dbRepository {
 	log.Printf("Connected to DB")
 	//defer conn.Close()
 	return &dbRepository{dbConn: conn}
+}
+
+func (repo *dbRepository) execQuery(qry string) error {
+	tx, err := repo.dbConn.Begin()
+	if err != nil {
+		log.Println("db Begin() miss")
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	if _, err = tx.Exec(qry); err != nil {
+		return err
+	}
+	return err
 }

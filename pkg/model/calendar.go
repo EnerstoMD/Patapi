@@ -6,4 +6,5 @@ type Event struct {
 	Start       *string `json:"start" db:"startdate"`
 	End         *string `json:"end" db:"enddate"`
 	Description *string `json:"description" db:"description"`
+	IsConfirmed *bool   `json:"is_confirmed" db:"is_confirmed"`
 }

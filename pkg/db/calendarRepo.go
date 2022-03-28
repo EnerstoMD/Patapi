@@ -8,6 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func (repo *dbRepository) DeleteEvent(ctx *gin.Context, id string) error {
+	q := `DELETE FROM event WHERE id=` + id
+	log.Println(q)
+	return repo.execQuery(q)
+}
+
 func (repo *dbRepository) GetAllEvents(ctx *gin.Context) (events []model.Event, err error) {
 	query := "select * from event"
 	rows, err := repo.dbConn.Queryx(query)
@@ -21,49 +27,21 @@ func (repo *dbRepository) GetAllEvents(ctx *gin.Context) (events []model.Event, 
 
 func (repo *dbRepository) CreateEvent(ctx *gin.Context, ev model.Event) error {
 	query, err := utils.PrepareSQLInsertStatement(ev)
-	log.Println(query)
 	if err != nil {
 		return err
 	}
-	tx, err := repo.dbConn.Begin()
-	if err != nil {
-		log.Println("db Begin() miss")
-		return err
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-			return
-		}
-		err = tx.Commit()
-	}()
-
-	if _, err = tx.Exec(query); err != nil {
-		return err
-	}
-	return err
+	return repo.execQuery(query)
 }
 
 func (repo *dbRepository) UpdateEvent(c *gin.Context, ev model.Event) error {
 	query, err := utils.PrepareSQLUpdateStatement(ev, *ev.Id)
-	log.Println(query)
 	if err != nil {
 		return err
 	}
-	tx, err := repo.dbConn.Begin()
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-			return
-		}
-		err = tx.Commit()
-	}()
+	return repo.execQuery(query)
+}
 
-	if _, err = tx.Exec(query); err != nil {
-		return err
-	}
-	return err
+func (repo *dbRepository) ConfirmEvent(ctx *gin.Context, id string) error {
+	query := `UPDATE event SET is_confirmed=1 WHERE id=` + id
+	return repo.execQuery(query)
 }
