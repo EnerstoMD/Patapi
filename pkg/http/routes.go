@@ -25,6 +25,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler) {
 	router.PATCH("v1/calendar/:id", ch.UpdateEvent)
 	router.DELETE("v1/calendar/:id", ch.DeleteEvent)
 	router.PATCH("v1/calendar/:id/confirm", ch.ConfirmEvent)
+	router.PATCH("v1/calendar/:id/unconfirm", ch.UnconfirmEvent)
 
 }
 

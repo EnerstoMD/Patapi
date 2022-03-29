@@ -45,3 +45,8 @@ func (repo *dbRepository) ConfirmEvent(ctx *gin.Context, id string) error {
 	query := `UPDATE event SET is_confirmed=true WHERE id=` + id
 	return repo.execQuery(query)
 }
+
+func (repo *dbRepository) UnconfirmEvent(ctx *gin.Context, id string) error {
+	query := `UPDATE event SET is_confirmed=false WHERE id=` + id
+	return repo.execQuery(query)
+}

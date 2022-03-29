@@ -14,6 +14,7 @@ type CalendarHandler interface {
 	UpdateEvent(ctx *gin.Context)
 	DeleteEvent(ctx *gin.Context)
 	ConfirmEvent(ctx *gin.Context)
+	UnconfirmEvent(ctx *gin.Context)
 }
 
 type calendarHandler struct {
@@ -95,4 +96,19 @@ func (calendarHandler *calendarHandler) ConfirmEvent(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "Event confirmed"})
+}
+
+func (calendarHandler *calendarHandler) UnconfirmEvent(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": 400, "msg": "id not filled"})
+		return
+	}
+
+	err := calendarHandler.calendarService.UnconfirmEvent(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't unconfirm event-id:" + id, "error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "Event unconfirmed"})
 }

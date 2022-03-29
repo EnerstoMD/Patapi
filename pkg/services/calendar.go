@@ -12,6 +12,7 @@ type CalService interface {
 	UpdateEvent(c *gin.Context, e model.Event) error
 	DeleteEvent(ctx *gin.Context, id string) error
 	ConfirmEvent(ctx *gin.Context, id string) error
+	UnconfirmEvent(ctx *gin.Context, id string) error
 }
 
 type CalDb interface {
@@ -20,6 +21,7 @@ type CalDb interface {
 	UpdateEvent(c *gin.Context, e model.Event) error
 	DeleteEvent(ctx *gin.Context, id string) error
 	ConfirmEvent(ctx *gin.Context, id string) error
+	UnconfirmEvent(ctx *gin.Context, id string) error
 }
 
 type calService struct {
@@ -48,4 +50,8 @@ func (s *calService) DeleteEvent(ctx *gin.Context, id string) error {
 
 func (s *calService) ConfirmEvent(ctx *gin.Context, id string) error {
 	return s.d.ConfirmEvent(ctx, id)
+}
+
+func (s *calService) UnconfirmEvent(ctx *gin.Context, id string) error {
+	return s.d.UnconfirmEvent(ctx, id)
 }

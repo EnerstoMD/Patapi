@@ -26,6 +26,7 @@ type DbRepository interface {
 	UpdateEvent(c *gin.Context, e model.Event) error
 	DeleteEvent(ctx *gin.Context, id string) error
 	ConfirmEvent(ctx *gin.Context, id string) error
+	UnconfirmEvent(ctx *gin.Context, id string) error
 }
 
 func NewDbConnect() *dbRepository {
