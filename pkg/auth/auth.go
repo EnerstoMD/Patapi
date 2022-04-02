@@ -45,5 +45,5 @@ func (j *JwtWrapper) ValidateToken(tokenString string) (*JwtClaims, error) {
 	if claims.ExpiresAt < time.Now().Local().Unix() {
 		return nil, errors.New("Token expired")
 	}
-	return nil, err
+	return claims, err
 }
