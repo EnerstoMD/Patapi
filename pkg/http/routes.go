@@ -31,12 +31,12 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 	cal := router.Group("v1/calendar")
 	pat.Use(middleware.BearerAuth())
 	{
-		cal.GET("v1/calendar", ch.GetAllEvents)
-		cal.POST("v1/calendar", ch.CreateEvent)
-		cal.PATCH("v1/calendar/:id", ch.UpdateEvent)
-		cal.DELETE("v1/calendar/:id", ch.DeleteEvent)
-		cal.PATCH("v1/calendar/:id/confirm", ch.ConfirmEvent)
-		cal.PATCH("v1/calendar/:id/unconfirm", ch.UnconfirmEvent)
+		cal.GET("/", ch.GetAllEvents)
+		cal.POST("/", ch.CreateEvent)
+		cal.PATCH("/:id", ch.UpdateEvent)
+		cal.DELETE("/:id", ch.DeleteEvent)
+		cal.PATCH("/:id/confirm", ch.ConfirmEvent)
+		cal.PATCH("/:id/unconfirm", ch.UnconfirmEvent)
 	}
 
 }
