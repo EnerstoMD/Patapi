@@ -25,7 +25,7 @@ func PrepareSQLInsertStatement(T interface{}) (string, error) {
 	}
 	queryargs := `(` + strings.Join(args, ",") + `)`
 	queryvals := `(` + strings.Join(vals, ",") + `)`
-	query := `INSERT INTO ` + strings.ToLower(t.Name()) + ` ` + queryargs + ` VALUES ` + queryvals
+	query := `INSERT INTO public.` + strings.ToLower(t.Name()) + ` ` + queryargs + ` VALUES ` + queryvals
 	return query, nil
 }
 
@@ -49,6 +49,6 @@ func PrepareSQLUpdateStatement(T interface{}, id string) (string, error) {
 	if len(setColums) == 0 {
 		return "", errors.New("no attributes to update")
 	}
-	query := `UPDATE ` + strings.ToLower(t.Name()) + ` SET ` + strings.Join(setColums, ",") + ` WHERE id= ` + id
+	query := `UPDATE public.` + strings.ToLower(t.Name()) + ` SET ` + strings.Join(setColums, ",") + ` WHERE id= ` + id
 	return query, nil
 }

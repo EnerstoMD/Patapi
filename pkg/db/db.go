@@ -27,11 +27,15 @@ type DbRepository interface {
 	DeleteEvent(ctx *gin.Context, id string) error
 	ConfirmEvent(ctx *gin.Context, id string) error
 	UnconfirmEvent(ctx *gin.Context, id string) error
+
+	CreateUser(c *gin.Context, u model.User) error
+	GetUserByEmail(c *gin.Context, u model.User) (model.User, error)
+	VerifyUserExists(c *gin.Context, u model.User) error
 }
 
 func NewDbConnect() *dbRepository {
 	dbURL := "postgres://" + os.Getenv("DBUSER") + ":" + os.Getenv("DBPASSWORD") + "@" + os.Getenv("DBHOST") + ":" + os.Getenv("DBPORT") + "/" + os.Getenv("DBNAME")
-	conn, err := sqlx.Open("pgx", dbURL)
+	conn, err := sqlx.Connect("pgx", dbURL)
 	if conn == nil || err != nil {
 		log.Fatalf("Failed to connect to db")
 		os.Exit(100)

@@ -1,0 +1,129 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Enersto/patapi/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: https://Enersto/patapi/1.0.0
+info:
+  description: This is PatientAPI
+  version: "1.0.0"
+  title: Patapi
+  contact:
+    email: hagaradaody@gmail.com
+tags:
+  - name: admins
+    description: Secured Admin-only calls
+  - name: md
+    description: api to be called by MDs
+  - name: patients
+    description: Operations available to patients
+paths:
+  /patient:
+    get:
+      tags:
+        - md
+      summary: searches patients
+      operationId: searchPatient
+      description: |
+        By passing in the appropriate options, you can search for
+        available inventory in the system
+      parameters:
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up inventory
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: skip
+          description: number of records to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of records to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admins
+        - md
+      summary: adds an patient into db
+      operationId: addPatient
+      description: Adds a patient to the system
+      responses:
+        '201':
+          description: patient created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing patient already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+        description: Inventory item to add
+components:
+  schemas:
+    Patient:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        oid:
+          type: string
+          format: int64
+        name:
+          type: string
+        firstnames:
+          type: string
+          example: 'jean,yves,robert'
+        lastname:
+          type: string
+        birthname:
+          type: string
+        gender:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        birthplace_code:
+          type: string
+        ins_matricule:
+          type: string
+        nir:
+          type: string
+        nia:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        postalcode:
+          type: string
+        phone:
+          type: string
+          format: phone
+        email:
+          type: string
+          format: email
