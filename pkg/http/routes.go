@@ -4,39 +4,43 @@ import (
 	"lupus/patapi/pkg/middleware"
 	"net/http"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh UserHandler) {
-	router.GET("/", welcome)
+	router.GET("", welcome)
 	router.NoRoute(notFound)
-	router.Use(cors.Default())
-
-	router.POST("v1/user/register", uh.Register)
-	router.POST("v1/user/login", uh.Login)
-
-	pat := router.Group("v1/patients")
-	pat.Use(middleware.BearerAuth())
+	v1 := router.Group("v1")
 	{
-		pat.GET("/", ph.GetAllPatients)
-		pat.POST("/", ph.CreatePatient)
-		pat.GET("/search", ph.SearchPatientByName)
-		pat.GET("/:id", ph.GetPatientById)
-		pat.PATCH("/:id", ph.UpdatePatient)
-		pat.GET("/ins", ph.SearchPatientByINSMatricule)
-		pat.GET("/card", ph.ReadCarteVitale)
-	}
+		user := v1.Group("user")
+		{
+			user.POST("register", uh.Register)
+			user.POST("login", uh.Login)
+		}
 
-	cal := router.Group("v1/calendar")
-	pat.Use(middleware.BearerAuth())
-	{
-		cal.GET("/", ch.GetAllEvents)
-		cal.POST("/", ch.CreateEvent)
-		cal.PATCH("/:id", ch.UpdateEvent)
-		cal.DELETE("/:id", ch.DeleteEvent)
-		cal.PATCH("/:id/confirm", ch.ConfirmEvent)
-		cal.PATCH("/:id/unconfirm", ch.UnconfirmEvent)
+		patient := v1.Group("patient")
+		patient.Use(middleware.BearerAuth())
+		{
+			patient.GET("", ph.GetAllPatients)
+			patient.POST("", ph.CreatePatient)
+			patient.GET("search", ph.SearchPatientByName)
+			patient.GET(":id", ph.GetPatientById)
+			patient.PATCH(":id", ph.UpdatePatient)
+			patient.GET("ins", ph.SearchPatientByINSMatricule)
+			patient.GET("card", ph.ReadCarteVitale)
+		}
+
+		calendar := v1.Group("calendar")
+		calendar.Use(middleware.BearerAuth())
+		{
+			calendar.GET("", ch.GetAllEvents)
+			calendar.POST("", ch.CreateEvent)
+			calendar.PATCH(":id", ch.UpdateEvent)
+			calendar.DELETE(":id", ch.DeleteEvent)
+			calendar.PATCH(":id/confirm", ch.ConfirmEvent)
+			calendar.PATCH(":id/unconfirm", ch.UnconfirmEvent)
+		}
+
 	}
 
 }

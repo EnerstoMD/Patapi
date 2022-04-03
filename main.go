@@ -5,8 +5,10 @@ import (
 	"lupus/patapi/pkg/db"
 	handler "lupus/patapi/pkg/http"
 	service "lupus/patapi/pkg/services"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
 	"github.com/joho/godotenv"
 )
 
@@ -25,8 +27,18 @@ func main() {
 	ch := handler.NewCalendarHandler(calEventLister)
 	uh := handler.NewUserHandler(userService)
 
+	//use https://github.com/itsjamie/gin-cors ??
 	router := gin.New()
-	router.Use(gin.Recovery(), gin.Logger())
+
+	router.Use(gin.Recovery(), gin.Logger(), cors.Middleware(cors.Config{
+		Origins:         "http://localhost:4200",
+		Methods:         "GET, PUT, POST, DELETE, OPTIONS, PATCH",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     true,
+		ValidateHeaders: true,
+	}))
 	//cors shouldnot be allowing every orign
 	router.SetTrustedProxies(nil)
 	handler.InitRoutes(router, ph, ch, uh)
