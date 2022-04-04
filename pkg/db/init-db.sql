@@ -26,3 +26,12 @@ CREATE TABLE user (
 	email VARCHAR(255),
 	password VARCHAR(255)
 );
+
+CREATE TABLE event (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    description VARCHAR(255),
+    startdate VARCHAR(255),
+    enddate VARCHAR(255),
+    is_confirmed VARCHAR(5)
+);
