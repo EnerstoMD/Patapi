@@ -31,13 +31,14 @@ func main() {
 	router := gin.New()
 
 	router.Use(gin.Recovery(), gin.Logger(), cors.Middleware(cors.Config{
-		Origins:         "http://localhost:4200,http://localhost,http://51.15.205.164",
-		Methods:         "GET, PUT, POST, DELETE, OPTIONS, PATCH",
-		RequestHeaders:  "Origin, Authorization, Content-Type",
-		ExposedHeaders:  "",
-		MaxAge:          50 * time.Second,
-		Credentials:     true,
-		ValidateHeaders: true,
+		// Origins:        "http://localhost:4200,http://localhost,http://51.15.205.164,http://51.15.205.164/",
+		Origins:        "*",
+		Methods:        "GET, PUT, POST, DELETE, OPTIONS, PATCH",
+		RequestHeaders: "Origin, Authorization, Content-Type",
+		ExposedHeaders: "",
+		MaxAge:         50 * time.Second,
+		Credentials:    true,
+		// ValidateHeaders: true,
 	}))
 	//cors shouldnot be allowing every orign
 	router.SetTrustedProxies(nil)
