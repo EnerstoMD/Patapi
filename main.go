@@ -29,5 +29,5 @@ func main() {
 	gin.SetMode(os.Getenv("GIN_MODE"))
 	router := gin.New()
 	handler.InitRoutes(router, ph, ch, uh)
-	router.Run(":4545") // listen and serve on 0.0.0.0:4545
+	router.Run(os.Getenv("PATAPI_PORT")) // listen and serve on 0.0.0.0:4545
 }
