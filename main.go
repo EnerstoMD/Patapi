@@ -37,7 +37,7 @@ func main() {
 		RequestHeaders: "Origin, Authorization, Content-Type",
 		ExposedHeaders: "",
 		MaxAge:         50 * time.Second,
-		Credentials:    true,
+		// Credentials:    true,
 		// ValidateHeaders: true,
 	}))
 	//cors shouldnot be allowing every orign
