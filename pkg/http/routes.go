@@ -3,11 +3,15 @@ package handler
 import (
 	"lupus/patapi/pkg/middleware"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
 )
 
 func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh UserHandler) {
+	SetupMiddleware(router)
 	router.GET("", welcome)
 	router.NoRoute(notFound)
 	v1 := router.Group("v1")
@@ -43,6 +47,27 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 
 	}
 
+}
+
+func SetupMiddleware(router *gin.Engine) {
+	creds, validateheaders := false, false
+	if os.Getenv("CORS_Credentials") == "true" {
+		creds = true
+	}
+	if os.Getenv("CORS_ValidateHeaders") == "true" {
+		validateheaders = true
+	}
+	router.Use(gin.Recovery(), gin.Logger(), cors.Middleware(cors.Config{
+		Origins:         os.Getenv("CORS_Origins"),
+		Methods:         os.Getenv("CORS_Methods"),
+		RequestHeaders:  os.Getenv("CORS_RequestHeaders"),
+		ExposedHeaders:  os.Getenv("CORS_ExposedHeaders"),
+		MaxAge:          50 * time.Second,
+		Credentials:     creds,
+		ValidateHeaders: validateheaders,
+	}))
+	//cors shouldnot be allowing every orign
+	router.SetTrustedProxies(nil)
 }
 
 func welcome(c *gin.Context) {
