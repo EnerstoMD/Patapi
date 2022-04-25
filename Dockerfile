@@ -10,6 +10,6 @@ COPY go.sum ./
 RUN go mod download
 COPY . ./
 RUN go build -o /patapi
-
+EXPOSE 4545
 
 CMD [ "/patapi" ]
