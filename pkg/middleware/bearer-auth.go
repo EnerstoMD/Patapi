@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"lupus/patapi/pkg/auth"
+	"lupus/patapi/pkg/model"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func BearerAuth() gin.HandlerFunc {
+func BearerAuth(a auth.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clientToken := c.Request.Header.Get("Authorization")
 		if clientToken == "" {
@@ -26,12 +27,12 @@ func BearerAuth() gin.HandlerFunc {
 			return
 		}
 
-		jwtWrapper := auth.JwtWrapper{
+		jwtWrapper := model.JwtWrapper{
 			SecretKey: "secret",
 			Issuer:    "lupus",
 		}
 
-		claims, err := jwtWrapper.ValidateToken(clientToken)
+		claims, err := a.ValidateToken(c, clientToken, jwtWrapper)
 		if err != nil {
 			c.JSON(401, err.Error())
 			c.Abort()

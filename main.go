@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"lupus/patapi/pkg/auth"
 	"lupus/patapi/pkg/db"
 	handler "lupus/patapi/pkg/http"
 	service "lupus/patapi/pkg/services"
@@ -17,17 +18,18 @@ func main() {
 		log.Fatal("Error lodading .env file")
 	}
 
-	dbConn := db.NewDbConnect()
+	DbSources := db.NewDbConnect()
 
-	patientlister := service.NewPatService(dbConn)
-	calEventLister := service.NewCalService(dbConn)
-	userService := service.NewUserService(dbConn)
+	patientlister := service.NewPatService(DbSources)
+	calEventLister := service.NewCalService(DbSources)
+	authService := auth.NewAuthService(DbSources)
+	userService := service.NewUserService(DbSources, authService)
 	ph := handler.NewPatientHandler(patientlister)
 	ch := handler.NewCalendarHandler(calEventLister)
 	uh := handler.NewUserHandler(userService)
 
 	gin.SetMode(os.Getenv("GIN_MODE"))
 	router := gin.New()
-	handler.InitRoutes(router, ph, ch, uh)
+	handler.InitRoutes(router, ph, ch, uh, authService)
 	router.Run(":4545") // listen and serve on 0.0.0.0:4545
 }

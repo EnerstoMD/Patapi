@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"lupus/patapi/pkg/auth"
 	"lupus/patapi/pkg/middleware"
 	"net/http"
 	"os"
@@ -10,7 +11,7 @@ import (
 	cors "github.com/itsjamie/gin-cors"
 )
 
-func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh UserHandler) {
+func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh UserHandler, a auth.AuthService) {
 	SetupMiddleware(router)
 	router.GET("", welcome)
 	router.NoRoute(notFound)
@@ -23,7 +24,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 		}
 
 		patient := v1.Group("patient")
-		patient.Use(middleware.BearerAuth())
+		patient.Use(middleware.BearerAuth(a))
 		{
 			patient.GET("", ph.GetAllPatients)
 			patient.POST("", ph.CreatePatient)
@@ -35,7 +36,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 		}
 
 		calendar := v1.Group("calendar")
-		calendar.Use(middleware.BearerAuth())
+		calendar.Use(middleware.BearerAuth(a))
 		{
 			calendar.GET("", ch.GetAllEvents)
 			calendar.POST("", ch.CreateEvent)

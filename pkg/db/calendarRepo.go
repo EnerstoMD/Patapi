@@ -8,13 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (repo *dbRepository) DeleteEvent(ctx *gin.Context, id string) error {
+func (repo *DbSources) DeleteEvent(ctx *gin.Context, id string) error {
 	q := `DELETE FROM event WHERE id=` + id
 	log.Println(q)
 	return repo.execQuery(q)
 }
 
-func (repo *dbRepository) GetAllEvents(ctx *gin.Context) (events []model.Event, err error) {
+func (repo *DbSources) GetAllEvents(ctx *gin.Context) (events []model.Event, err error) {
 	query := "select * from event"
 	rows, err := repo.dbConn.Queryx(query)
 	for rows.Next() {
@@ -25,7 +25,7 @@ func (repo *dbRepository) GetAllEvents(ctx *gin.Context) (events []model.Event, 
 	return events, err
 }
 
-func (repo *dbRepository) CreateEvent(ctx *gin.Context, ev model.Event) error {
+func (repo *DbSources) CreateEvent(ctx *gin.Context, ev model.Event) error {
 	query, err := utils.PrepareSQLInsertStatement(ev)
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func (repo *dbRepository) CreateEvent(ctx *gin.Context, ev model.Event) error {
 	return repo.execQuery(query)
 }
 
-func (repo *dbRepository) UpdateEvent(c *gin.Context, ev model.Event) error {
+func (repo *DbSources) UpdateEvent(c *gin.Context, ev model.Event) error {
 	query, err := utils.PrepareSQLUpdateStatement(ev, *ev.Id)
 	if err != nil {
 		return err
@@ -41,12 +41,12 @@ func (repo *dbRepository) UpdateEvent(c *gin.Context, ev model.Event) error {
 	return repo.execQuery(query)
 }
 
-func (repo *dbRepository) ConfirmEvent(ctx *gin.Context, id string) error {
+func (repo *DbSources) ConfirmEvent(ctx *gin.Context, id string) error {
 	query := `UPDATE event SET is_confirmed=true WHERE id=` + id
 	return repo.execQuery(query)
 }
 
-func (repo *dbRepository) UnconfirmEvent(ctx *gin.Context, id string) error {
+func (repo *DbSources) UnconfirmEvent(ctx *gin.Context, id string) error {
 	query := `UPDATE event SET is_confirmed=false WHERE id=` + id
 	return repo.execQuery(query)
 }

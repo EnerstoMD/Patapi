@@ -1,9 +1,8 @@
 package service
 
 import (
+	"lupus/patapi/pkg/auth"
 	"lupus/patapi/pkg/model"
-
-	auth "lupus/patapi/pkg/auth"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -20,13 +19,13 @@ type UserDb interface {
 	GetUserByEmail(c *gin.Context, u model.User) (model.User, error)
 	VerifyUserExists(c *gin.Context, u model.User) error
 }
-
 type userService struct {
 	d UserDb
+	a auth.AuthService
 }
 
-func NewUserService(d UserDb) UserService {
-	return &userService{d}
+func NewUserService(d UserDb, a auth.AuthService) UserService {
+	return &userService{d, a}
 }
 
 func (s *userService) CreateUser(c *gin.Context, u model.User) error {
@@ -54,16 +53,15 @@ func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
 		return "", err
 	}
 
-	jwtWrapper := auth.JwtWrapper{
+	jwtWrapper := model.JwtWrapper{
 		SecretKey:       "secret",
 		Issuer:          "lupus",
 		ExpirationHours: 24,
 	}
 
-	return jwtWrapper.GenerateToken(*searchedUser.Email)
+	return s.a.GenerateToken(c, *searchedUser.Id, *searchedUser.Email, jwtWrapper)
 }
 
 func (s *userService) VerifyUserExists(c *gin.Context, u model.User) error {
-
 	return s.d.VerifyUserExists(c, u)
 }

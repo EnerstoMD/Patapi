@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (repo *dbRepository) GetAllPatients(ctx *gin.Context) (patients []model.Patient, err error) {
+func (repo *DbSources) GetAllPatients(ctx *gin.Context) (patients []model.Patient, err error) {
 	query := "select * from patient"
 	//defer repo.dbConn.Close()
 	rows, err := repo.dbConn.Queryx(query)
@@ -22,7 +22,7 @@ func (repo *dbRepository) GetAllPatients(ctx *gin.Context) (patients []model.Pat
 	return patients, err
 }
 
-func (repo *dbRepository) CreatePatient(ctx *gin.Context, patient model.Patient) error {
+func (repo *DbSources) CreatePatient(ctx *gin.Context, patient model.Patient) error {
 	query, err := utils.PrepareSQLInsertStatement(patient)
 
 	if err != nil {
@@ -47,7 +47,7 @@ func (repo *dbRepository) CreatePatient(ctx *gin.Context, patient model.Patient)
 	return err
 }
 
-func (repo *dbRepository) SearchPatientByName(c *gin.Context, nameOrId string) (patients []model.Patient, err error) {
+func (repo *DbSources) SearchPatientByName(c *gin.Context, nameOrId string) (patients []model.Patient, err error) {
 	query := `SELECT * FROM patient WHERE (name LIKE '%` + nameOrId + `%' OR lastname LIKE '%` + nameOrId + `%')`
 	if numSecu, err := strconv.Atoi(nameOrId); err == nil && numSecu > 99999999999999 {
 		query = `SELECT * FROM patient WHERE ins_matricule=` + nameOrId
@@ -65,12 +65,12 @@ func (repo *dbRepository) SearchPatientByName(c *gin.Context, nameOrId string) (
 	return patients, err
 }
 
-func (repo *dbRepository) GetPatientById(c *gin.Context, id string) (patient model.Patient, err error) {
+func (repo *DbSources) GetPatientById(c *gin.Context, id string) (patient model.Patient, err error) {
 	err = repo.dbConn.Get(&patient, "SELECT * FROM patient WHERE id=$1", id)
 	return patient, err
 }
 
-func (repo *dbRepository) UpdatePatient(c *gin.Context, patient model.Patient) error {
+func (repo *DbSources) UpdatePatient(c *gin.Context, patient model.Patient) error {
 	query, err := utils.PrepareSQLUpdateStatement(patient, *patient.Id)
 
 	if err != nil {
@@ -94,12 +94,7 @@ func (repo *dbRepository) UpdatePatient(c *gin.Context, patient model.Patient) e
 	return err
 }
 
-func (repo *dbRepository) SearchPatientByINSMatricule(c *gin.Context, id string) (patients []model.Patient, err error) {
-	// numSecu, err := strconv.Atoi(id)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
+func (repo *DbSources) SearchPatientByINSMatricule(c *gin.Context, id string) (patients []model.Patient, err error) {
 	query := `SELECT * FROM patient WHERE ins_matricule LIKE '` + id + `'`
 	rows, err := repo.dbConn.Queryx(query)
 	// rows, err := repo.dbConn.Queryx(query)
