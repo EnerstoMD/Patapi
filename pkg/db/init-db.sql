@@ -33,5 +33,8 @@ CREATE TABLE event (
     description VARCHAR(255),
     startdate VARCHAR(255),
     enddate VARCHAR(255),
-    is_confirmed VARCHAR(5)
+    is_confirmed VARCHAR(5),
+	created_by INTEGER,
 );
+ALTER TABLE "event"
+	ADD CONSTRAINT "FK_event_user" FOREIGN KEY ("created_by") REFERENCES "user" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;

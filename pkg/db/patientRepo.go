@@ -23,7 +23,7 @@ func (repo *DbSources) GetAllPatients(ctx *gin.Context) (patients []model.Patien
 }
 
 func (repo *DbSources) CreatePatient(ctx *gin.Context, patient model.Patient) error {
-	query, err := utils.PrepareSQLInsertStatement(patient)
+	query, err := utils.PrepareSQLInsertStatement(ctx, patient)
 
 	if err != nil {
 		return err

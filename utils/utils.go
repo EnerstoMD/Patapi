@@ -2,11 +2,14 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
-func PrepareSQLInsertStatement(T interface{}) (string, error) {
+func PrepareSQLInsertStatement(c *gin.Context, T interface{}) (string, error) {
 	t := reflect.TypeOf(T)
 	rv := reflect.ValueOf(T)
 	var args, vals []string
@@ -23,9 +26,17 @@ func PrepareSQLInsertStatement(T interface{}) (string, error) {
 		args = append(args, arg)
 		vals = append(vals, value)
 	}
+	table := strings.ToLower(t.Name())
+	if table == "event" {
+		queryargs := `(` + strings.Join(args, ",") + `,created_by)`
+		queryvals := `(` + strings.Join(vals, ",") + `,` + fmt.Sprintf("%v", c.Keys["userId"]) + `)`
+		query := `INSERT INTO public.` + strings.ToLower(t.Name()) + ` ` + queryargs + ` VALUES ` + queryvals
+		return query, nil
+	}
 	queryargs := `(` + strings.Join(args, ",") + `)`
 	queryvals := `(` + strings.Join(vals, ",") + `)`
-	query := `INSERT INTO public.` + strings.ToLower(t.Name()) + ` ` + queryargs + ` VALUES ` + queryvals
+
+	query := `INSERT INTO public.` + table + ` ` + queryargs + ` VALUES ` + queryvals
 	return query, nil
 }
 

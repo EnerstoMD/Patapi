@@ -33,6 +33,7 @@ func (auth *authService) GenerateToken(c *gin.Context, userId string, email stri
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),
 			Issuer:    j.Issuer,
+			Subject:   userId,
 		},
 	}
 

@@ -10,7 +10,7 @@ import (
 )
 
 func (repo *DbSources) CreateUser(c *gin.Context, u model.User) error {
-	query, err := utils.PrepareSQLInsertStatement(u)
+	query, err := utils.PrepareSQLInsertStatement(c, u)
 	if err != nil {
 		return err
 	}
