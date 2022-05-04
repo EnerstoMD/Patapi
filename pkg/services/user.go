@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"lupus/patapi/pkg/auth"
 	"lupus/patapi/pkg/model"
 	"strings"
@@ -15,12 +16,14 @@ type UserService interface {
 	Login(c *gin.Context, u model.User) (string, error)
 	VerifyUserExists(c *gin.Context, u model.User) error
 	Logout(c *gin.Context) error
+	GetUserInfo(c *gin.Context) (model.User, error)
 }
 
 type UserDb interface {
 	CreateUser(c *gin.Context, u model.User) error
-	GetUserByEmail(c *gin.Context, u model.User) (model.User, error)
+	GetUserByEmail(c *gin.Context, email string) (model.User, error)
 	VerifyUserExists(c *gin.Context, u model.User) error
+	GetUserById(c *gin.Context, id string) (model.User, error)
 }
 type userService struct {
 	d UserDb
@@ -48,7 +51,7 @@ func (s *userService) CreateUser(c *gin.Context, u model.User) error {
 }
 
 func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
-	searchedUser, err := s.d.GetUserByEmail(c, u)
+	searchedUser, err := s.d.GetUserByEmail(c, *u.Email)
 	if err != nil {
 		return "", err
 	}
@@ -75,4 +78,12 @@ func (s *userService) Logout(c *gin.Context) error {
 		return errors.New("no token, cannot logout")
 	}
 	return s.a.DeleteToken(c, token)
+}
+
+func (s *userService) GetUserInfo(c *gin.Context) (model.User, error) {
+	user, err := s.d.GetUserById(c, fmt.Sprintf("%v", c.Keys["userId"]))
+	if err != nil {
+		return model.User{}, err
+	}
+	return user, nil
 }

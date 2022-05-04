@@ -23,6 +23,13 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			user.POST("login", uh.Login)
 			user.DELETE("logout", uh.Logout)
 		}
+		userinfo := user.Group("userinfo")
+		userinfo.Use(middleware.BearerAuth(a))
+		{
+			userinfo.GET("", uh.GetUserInfo)
+			// userinfo.PATCH("", uh.UpdateUserInfo)
+			// userinfo.DELETE("/:id", uh.DeleteUserInfo)
+		}
 
 		patient := v1.Group("patient")
 		patient.Use(middleware.BearerAuth(a))

@@ -44,7 +44,6 @@ func BearerAuth(a auth.AuthService) gin.HandlerFunc {
 
 		c.Set("email", claims.Email)
 		c.Set("userId", claims.Subject)
-
 		c.Next()
 	}
 }

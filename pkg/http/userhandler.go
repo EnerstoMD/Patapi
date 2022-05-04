@@ -12,6 +12,7 @@ type UserHandler interface {
 	Register(ctx *gin.Context)
 	Login(ctx *gin.Context)
 	Logout(ctx *gin.Context)
+	GetUserInfo(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -61,4 +62,13 @@ func (userHandler *userHandler) Logout(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "User logged out"})
+}
+
+func (userHandler *userHandler) GetUserInfo(c *gin.Context) {
+	user, err := userHandler.userService.GetUserInfo(c)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": 404, "msg": "can't find user", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
