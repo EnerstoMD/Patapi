@@ -12,11 +12,13 @@ import (
 type AuthService interface {
 	GenerateToken(c *gin.Context, userId, email string, j model.JwtWrapper) (string, error)
 	ValidateToken(c *gin.Context, tokenString string, j model.JwtWrapper) (*model.JwtClaims, error)
+	DeleteToken(c *gin.Context, t string) error
 }
 
 type TokenDb interface {
 	SetRefreshToken(c *gin.Context, userID, tokenID string, expiresIn time.Duration) error
 	ValidateToken(c *gin.Context, userID, previoustokenID string) error
+	DeleteToken(c *gin.Context, token string) error
 }
 
 type authService struct {
@@ -72,4 +74,8 @@ func (auth *authService) ValidateToken(c *gin.Context, tokenString string, j mod
 	}
 
 	return claims, err
+}
+
+func (auth *authService) DeleteToken(c *gin.Context, token string) error {
+	return auth.t.DeleteToken(c, token)
 }

@@ -1,8 +1,10 @@
 package service
 
 import (
+	"errors"
 	"lupus/patapi/pkg/auth"
 	"lupus/patapi/pkg/model"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -12,6 +14,7 @@ type UserService interface {
 	CreateUser(c *gin.Context, u model.User) error
 	Login(c *gin.Context, u model.User) (string, error)
 	VerifyUserExists(c *gin.Context, u model.User) error
+	Logout(c *gin.Context) error
 }
 
 type UserDb interface {
@@ -64,4 +67,12 @@ func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
 
 func (s *userService) VerifyUserExists(c *gin.Context, u model.User) error {
 	return s.d.VerifyUserExists(c, u)
+}
+
+func (s *userService) Logout(c *gin.Context) error {
+	token := strings.Split(c.GetHeader("Authorization"), " ")[1]
+	if token == "" {
+		return errors.New("no token, cannot logout")
+	}
+	return s.a.DeleteToken(c, token)
 }

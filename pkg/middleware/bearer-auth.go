@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"log"
 	"lupus/patapi/pkg/auth"
 	"lupus/patapi/pkg/model"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +36,8 @@ func BearerAuth(a auth.AuthService) gin.HandlerFunc {
 
 		claims, err := a.ValidateToken(c, clientToken, jwtWrapper)
 		if err != nil {
-			c.JSON(401, err.Error())
+			log.Println(err)
+			c.JSON(http.StatusUnauthorized, "Invalid Token")
 			c.Abort()
 			return
 		}

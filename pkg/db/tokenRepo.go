@@ -21,3 +21,7 @@ func (repo *DbSources) ValidateToken(c *gin.Context, userID, previoustokenID str
 	}
 	return nil
 }
+
+func (repo *DbSources) DeleteToken(c *gin.Context, token string) error {
+	return repo.redisClient.Del(c, token).Err()
+}

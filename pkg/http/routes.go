@@ -21,6 +21,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 		{
 			user.POST("register", uh.Register)
 			user.POST("login", uh.Login)
+			user.DELETE("logout", uh.Logout)
 		}
 
 		patient := v1.Group("patient")
