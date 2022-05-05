@@ -17,6 +17,7 @@ type UserService interface {
 	VerifyUserExists(c *gin.Context, u model.User) error
 	Logout(c *gin.Context) error
 	GetUserInfo(c *gin.Context) (model.User, error)
+	GetUsers(c *gin.Context) ([]model.User, error)
 }
 
 type UserDb interface {
@@ -24,6 +25,7 @@ type UserDb interface {
 	GetUserByEmail(c *gin.Context, email string) (model.User, error)
 	VerifyUserExists(c *gin.Context, u model.User) error
 	GetUserById(c *gin.Context, id string) (model.User, error)
+	GetUsers(c *gin.Context) ([]model.User, error)
 }
 type userService struct {
 	d UserDb
@@ -86,4 +88,8 @@ func (s *userService) GetUserInfo(c *gin.Context) (model.User, error) {
 		return model.User{}, err
 	}
 	return user, nil
+}
+
+func (s *userService) GetUsers(c *gin.Context) ([]model.User, error) {
+	return s.d.GetUsers(c)
 }

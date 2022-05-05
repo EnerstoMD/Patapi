@@ -63,3 +63,21 @@ func (repo *DbSources) VerifyUserExists(c *gin.Context, u model.User) error {
 	}
 	return errors.New("user email already exists")
 }
+
+func (repo *DbSources) GetUsers(c *gin.Context) ([]model.User, error) {
+	query := `SELECT id,name,email FROM public.user`
+	rows, err := repo.dbConn.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	var users []model.User
+	for rows.Next() {
+		var user model.User
+		err = rows.StructScan(&user)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}

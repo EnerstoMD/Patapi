@@ -13,6 +13,7 @@ type UserHandler interface {
 	Login(ctx *gin.Context)
 	Logout(ctx *gin.Context)
 	GetUserInfo(ctx *gin.Context)
+	GetUsers(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -71,4 +72,13 @@ func (userHandler *userHandler) GetUserInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, user)
+}
+
+func (userHandler *userHandler) GetUsers(c *gin.Context) {
+	users, err := userHandler.userService.GetUsers(c)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": 404, "msg": "can't find users", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }

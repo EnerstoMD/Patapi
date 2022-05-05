@@ -36,6 +36,7 @@ type DbRepository interface {
 	GetUserByEmail(c *gin.Context, u model.User) (model.User, error)
 	VerifyUserExists(c *gin.Context, u model.User) error
 	GetUserById(c *gin.Context, id string) (model.User, error)
+	GetUsers(c *gin.Context) ([]model.User, error)
 }
 
 type TokenRepository interface {
