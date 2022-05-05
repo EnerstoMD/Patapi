@@ -41,9 +41,12 @@ func BearerAuth(a auth.AuthService) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		//context could be replaced to have the right roles
 		c.Set("email", claims.Email)
 		c.Set("userId", claims.Subject)
+		c.Set("roles", claims.Roles)
 		c.Next()
 	}
 }
+
+//Create a new interceptor to put in context roles

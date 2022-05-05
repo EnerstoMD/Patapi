@@ -26,6 +26,7 @@ CREATE TABLE user (
 	email VARCHAR(255),
 	password VARCHAR(255)
 );
+ALTER TABLE public.user ADD CONSTRAINT "identifier" UNIQUE (email);
 
 CREATE TABLE event (
     id SERIAL PRIMARY KEY,

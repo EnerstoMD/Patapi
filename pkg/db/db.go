@@ -38,6 +38,8 @@ type DbRepository interface {
 	GetUserById(c *gin.Context, id string) (model.User, error)
 	GetUsers(c *gin.Context) ([]model.User, error)
 	UpdateUser(c *gin.Context, u model.User) error
+
+	GetUserRoles(c *gin.Context, id string) ([]int, error)
 }
 
 type TokenRepository interface {

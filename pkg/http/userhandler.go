@@ -18,6 +18,7 @@ type UserHandler interface {
 	DeleteUser(ctx *gin.Context)
 	UpdatePassword(ctx *gin.Context)
 	AdminUpdatePassword(ctx *gin.Context)
+	UpdateUserInfo(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -76,6 +77,27 @@ func (userHandler *userHandler) GetUserInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, user)
+}
+
+func (userHandler *userHandler) UpdateUserInfo(c *gin.Context) {
+	var user model.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read user", "error": err.Error()})
+		return
+	}
+	//prevent updating pwd with this method
+	user.Password = nil
+	err := userHandler.userService.UpdateUserInfo(c, user)
+	//should read token from header instead
+	if c.Keys["userId"] != *user.Id {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't update user", "error": "cannot update others user"})
+		return
+	}
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't update user", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "User updated"})
 }
 
 func (userHandler *userHandler) GetUsers(c *gin.Context) {

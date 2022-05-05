@@ -94,3 +94,21 @@ func (repo *DbSources) UpdateUser(c *gin.Context, u model.User) error {
 	}
 	return repo.execQuery(query)
 }
+
+func (repo *DbSources) GetUserRoles(c *gin.Context, id string) ([]int, error) {
+	query := `SELECT role_id FROM public.user_roles WHERE user_id='` + id + `'`
+	rows, err := repo.dbConn.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	var roles []int
+	for rows.Next() {
+		var role int
+		err = rows.Scan(&role)
+		if err != nil {
+			return nil, err
+		}
+		roles = append(roles, role)
+	}
+	return roles, nil
+}

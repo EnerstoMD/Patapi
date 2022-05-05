@@ -20,6 +20,8 @@ type UserService interface {
 	GetUsers(c *gin.Context) ([]model.User, error)
 	DeleteUser(c *gin.Context, id string) error
 	UpdatePassword(c *gin.Context, password, userId string) error
+	UpdateUserInfo(c *gin.Context, u model.User) error
+	GetUserRoles(c *gin.Context, userId string) ([]int, error)
 }
 
 type UserDb interface {
@@ -30,6 +32,7 @@ type UserDb interface {
 	GetUsers(c *gin.Context) ([]model.User, error)
 	DeleteUser(c *gin.Context, id string) error
 	UpdateUser(c *gin.Context, u model.User) error
+	GetUserRoles(c *gin.Context, id string) ([]int, error)
 }
 type userService struct {
 	d UserDb
@@ -77,6 +80,10 @@ func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
 	if err := bcrypt.CompareHashAndPassword([]byte(*searchedUser.Password), []byte(*u.Password)); err != nil {
 		return "", err
 	}
+	roles, err := s.d.GetUserRoles(c, *searchedUser.Id)
+	if err != nil {
+		return "", err
+	}
 
 	jwtWrapper := model.JwtWrapper{
 		SecretKey:       "secret",
@@ -84,7 +91,7 @@ func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
 		ExpirationHours: 24,
 	}
 
-	return s.a.GenerateToken(c, *searchedUser.Id, *searchedUser.Email, jwtWrapper)
+	return s.a.GenerateToken(c, *searchedUser.Id, *searchedUser.Email, roles, jwtWrapper)
 }
 
 func (s *userService) VerifyUserExists(c *gin.Context, u model.User) error {
@@ -117,4 +124,12 @@ func (s *userService) DeleteUser(c *gin.Context, id string) error {
 		return errors.New("cannot delete yourself")
 	}
 	return s.d.DeleteUser(c, id)
+}
+
+func (s *userService) UpdateUserInfo(c *gin.Context, u model.User) error {
+	return s.d.UpdateUser(c, u)
+}
+
+func (s *userService) GetUserRoles(c *gin.Context, userId string) ([]int, error) {
+	return s.d.GetUserRoles(c, userId)
 }

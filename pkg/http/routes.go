@@ -37,7 +37,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 		{
 			userinfo.GET("", uh.GetUserInfo)
 			userinfo.PATCH("pwd", uh.UpdatePassword)
-			// userinfo.PATCH("", uh.UpdateUserInfo)
+			userinfo.PATCH("", uh.UpdateUserInfo)
 			// userinfo.DELETE("/:id", uh.DeleteUserInfo)
 		}
 

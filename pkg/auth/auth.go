@@ -10,7 +10,7 @@ import (
 )
 
 type AuthService interface {
-	GenerateToken(c *gin.Context, userId, email string, j model.JwtWrapper) (string, error)
+	GenerateToken(c *gin.Context, userId, email string, roles []int, j model.JwtWrapper) (string, error)
 	ValidateToken(c *gin.Context, tokenString string, j model.JwtWrapper) (*model.JwtClaims, error)
 	DeleteToken(c *gin.Context, t string) error
 }
@@ -29,9 +29,10 @@ func NewAuthService(t TokenDb) AuthService {
 	return &authService{t}
 }
 
-func (auth *authService) GenerateToken(c *gin.Context, userId string, email string, j model.JwtWrapper) (string, error) {
+func (auth *authService) GenerateToken(c *gin.Context, userId string, email string, roles []int, j model.JwtWrapper) (string, error) {
 	claims := &model.JwtClaims{
 		Email: email,
+		Roles: roles,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),
 			Issuer:    j.Issuer,
