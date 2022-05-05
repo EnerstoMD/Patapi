@@ -18,6 +18,8 @@ type UserService interface {
 	Logout(c *gin.Context) error
 	GetUserInfo(c *gin.Context) (model.User, error)
 	GetUsers(c *gin.Context) ([]model.User, error)
+	DeleteUser(c *gin.Context, id string) error
+	UpdatePassword(c *gin.Context, password, userId string) error
 }
 
 type UserDb interface {
@@ -26,6 +28,8 @@ type UserDb interface {
 	VerifyUserExists(c *gin.Context, u model.User) error
 	GetUserById(c *gin.Context, id string) (model.User, error)
 	GetUsers(c *gin.Context) ([]model.User, error)
+	DeleteUser(c *gin.Context, id string) error
+	UpdateUser(c *gin.Context, u model.User) error
 }
 type userService struct {
 	d UserDb
@@ -50,6 +54,19 @@ func (s *userService) CreateUser(c *gin.Context, u model.User) error {
 		return err
 	}
 	return s.d.CreateUser(c, u)
+}
+
+func (s *userService) UpdatePassword(c *gin.Context, password, userId string) error {
+	user, err := s.d.GetUserById(c, userId)
+	if err != nil {
+		return err
+	}
+	encryptedPassword, err := user.EncryptPassword(password)
+	if err != nil {
+		return err
+	}
+	user.Password = &encryptedPassword
+	return s.d.UpdateUser(c, user)
 }
 
 func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
@@ -92,4 +109,12 @@ func (s *userService) GetUserInfo(c *gin.Context) (model.User, error) {
 
 func (s *userService) GetUsers(c *gin.Context) ([]model.User, error) {
 	return s.d.GetUsers(c)
+}
+
+func (s *userService) DeleteUser(c *gin.Context, id string) error {
+	//can't delete user 1
+	if id == c.Keys["userId"] || id == "1" {
+		return errors.New("cannot delete yourself")
+	}
+	return s.d.DeleteUser(c, id)
 }

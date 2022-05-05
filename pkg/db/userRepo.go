@@ -81,3 +81,16 @@ func (repo *DbSources) GetUsers(c *gin.Context) ([]model.User, error) {
 	}
 	return users, nil
 }
+
+func (repo *DbSources) DeleteUser(c *gin.Context, id string) error {
+	query := `DELETE FROM public.user WHERE id='` + id + `'`
+	return repo.execQuery(query)
+}
+
+func (repo *DbSources) UpdateUser(c *gin.Context, u model.User) error {
+	query, err := utils.PrepareSQLUpdateStatement(u, *u.Id)
+	if err != nil {
+		return err
+	}
+	return repo.execQuery(query)
+}

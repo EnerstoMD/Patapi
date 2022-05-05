@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"lupus/patapi/pkg/model"
 	user "lupus/patapi/pkg/services"
 	"net/http"
@@ -14,6 +15,9 @@ type UserHandler interface {
 	Logout(ctx *gin.Context)
 	GetUserInfo(ctx *gin.Context)
 	GetUsers(ctx *gin.Context)
+	DeleteUser(ctx *gin.Context)
+	UpdatePassword(ctx *gin.Context)
+	AdminUpdatePassword(ctx *gin.Context)
 }
 
 type userHandler struct {
@@ -81,4 +85,61 @@ func (userHandler *userHandler) GetUsers(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, users)
+}
+
+func (userHandler *userHandler) DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+	err := userHandler.userService.DeleteUser(c, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": 404, "msg": "can't delete user", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "User deleted"})
+}
+
+func (userHandler *userHandler) AdminUpdatePassword(c *gin.Context) {
+	pwdModel := model.PasswordUpdate{}
+	var userId, pwd string
+
+	if err := c.ShouldBindJSON(&pwdModel); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read password in body", "error": err.Error()})
+		return
+	}
+	userId = c.Param("id")
+	pwd = *pwdModel.Password
+	if pwd == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read password in body", "error": "password is empty"})
+		return
+	}
+
+	err := userHandler.userService.UpdatePassword(c, pwd, userId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": 404, "msg": "can't update password", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "Password updated"})
+}
+
+func (userHandler *userHandler) UpdatePassword(c *gin.Context) {
+	pwdModel := model.PasswordUpdate{}
+	var userId, pwd string
+
+	if err := c.ShouldBindJSON(&pwdModel); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read password in body", "error": err.Error()})
+		return
+	}
+
+	userId = fmt.Sprintf("%v", c.Keys["userId"])
+	pwd = *pwdModel.Password
+	if pwd == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read password in body", "error": "password is empty"})
+		return
+	}
+
+	err := userHandler.userService.UpdatePassword(c, pwd, userId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": 404, "msg": "can't update password", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusNoContent, gin.H{"status": 204, "msg": "Password updated"})
 }

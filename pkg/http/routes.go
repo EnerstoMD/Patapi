@@ -28,12 +28,15 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 		{
 			admin.POST("register", uh.Register)
 			admin.GET("users", uh.GetUsers)
+			admin.DELETE("user/:id", uh.DeleteUser)
+			admin.PATCH("user/:id/pwd", uh.AdminUpdatePassword)
 		}
 
 		userinfo := user.Group("userinfo")
 		userinfo.Use(middleware.BearerAuth(a))
 		{
 			userinfo.GET("", uh.GetUserInfo)
+			userinfo.PATCH("pwd", uh.UpdatePassword)
 			// userinfo.PATCH("", uh.UpdateUserInfo)
 			// userinfo.DELETE("/:id", uh.DeleteUserInfo)
 		}

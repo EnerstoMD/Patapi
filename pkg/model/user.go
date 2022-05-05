@@ -13,6 +13,11 @@ type User struct {
 	Password *string `json:"password" db:"password"`
 }
 
+type PasswordUpdate struct {
+	Id       *string `json:"id" db:"id"`
+	Password *string `json:"password" db:"password"`
+}
+
 type LoginResponse struct {
 	Token string `json:"token"`
 }
