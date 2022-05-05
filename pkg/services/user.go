@@ -41,7 +41,7 @@ func (s *userService) CreateUser(c *gin.Context, u model.User) error {
 	if err != nil {
 		return err
 	}
-	u.Password, err = u.EncryptPassword(u.Password)
+	*u.Password, err = u.EncryptPassword(*u.Password)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(searchedUser.Password), []byte(u.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(*searchedUser.Password), []byte(*u.Password)); err != nil {
 		return "", err
 	}
 

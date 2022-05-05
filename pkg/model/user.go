@@ -10,7 +10,7 @@ type User struct {
 	Id       *string `json:"id" db:"id"`
 	Name     *string `json:"name" db:"name"`
 	Email    *string `json:"email" db:"email"`
-	Password string  `json:"password" db:"password"`
+	Password *string `json:"password" db:"password"`
 }
 
 type LoginResponse struct {
@@ -21,7 +21,7 @@ func (user *User) ValidateUser(u User) error {
 	if u.Email == nil {
 		return errors.New("email is required")
 	}
-	if u.Password == "" {
+	if u.Password == nil {
 		return errors.New("password is required")
 	}
 	return nil
