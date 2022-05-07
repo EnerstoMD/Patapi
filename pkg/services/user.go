@@ -91,7 +91,7 @@ func (s *userService) Login(c *gin.Context, u model.User) (string, error) {
 		ExpirationHours: 24,
 	}
 
-	return s.a.GenerateToken(c, *searchedUser.Id, *searchedUser.Email, roles, jwtWrapper)
+	return s.a.GenerateToken(c, *searchedUser.Name, *searchedUser.Id, *searchedUser.Email, roles, jwtWrapper)
 }
 
 func (s *userService) VerifyUserExists(c *gin.Context, u model.User) error {

@@ -10,7 +10,7 @@ import (
 )
 
 type AuthService interface {
-	GenerateToken(c *gin.Context, userId, email string, roles []int, j model.JwtWrapper) (string, error)
+	GenerateToken(c *gin.Context, name, userId, email string, roles []int, j model.JwtWrapper) (string, error)
 	ValidateToken(c *gin.Context, tokenString string, j model.JwtWrapper) (*model.JwtClaims, error)
 	DeleteToken(c *gin.Context, t string) error
 }
@@ -29,8 +29,9 @@ func NewAuthService(t TokenDb) AuthService {
 	return &authService{t}
 }
 
-func (auth *authService) GenerateToken(c *gin.Context, userId string, email string, roles []int, j model.JwtWrapper) (string, error) {
+func (auth *authService) GenerateToken(c *gin.Context, name string, userId string, email string, roles []int, j model.JwtWrapper) (string, error) {
 	claims := &model.JwtClaims{
+		Name:  name,
 		Email: email,
 		Roles: roles,
 		StandardClaims: jwt.StandardClaims{

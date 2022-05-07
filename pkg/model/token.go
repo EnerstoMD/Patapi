@@ -9,6 +9,7 @@ type JwtWrapper struct {
 }
 
 type JwtClaims struct {
+	Name  string `json:"name"`
 	Email string `json:"email"`
 	Roles []int  `json:"roles"`
 	jwt.StandardClaims
