@@ -14,6 +14,6 @@ RUN go build -o /patapi
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
-COPY --from=builder /app ./
+COPY --from=builder /patapi ./
 
 CMD [ "./patapi" ]
