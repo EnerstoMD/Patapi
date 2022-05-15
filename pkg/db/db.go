@@ -24,6 +24,8 @@ type DbRepository interface {
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
 	SearchPatientByINSMatricule(c *gin.Context, nameOrId string) (patients []model.Patient, err error)
+	BatchLoadPatients(c *gin.Context, p []model.Patient) error
+	BatchLoad(c *gin.Context, p []interface{}) error
 
 	GetAllEvents(c *gin.Context) ([]model.Event, error)
 	CreateEvent(c *gin.Context, e model.Event) error

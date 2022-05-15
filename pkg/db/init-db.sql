@@ -39,3 +39,5 @@ CREATE TABLE event (
 );
 ALTER TABLE "event"
 	ADD CONSTRAINT "FK_event_user" FOREIGN KEY ("created_by") REFERENCES "user" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE public.patient ADD CONSTRAINT "patientIdentifier" UNIQUE (name,lastname,ins_matricule);

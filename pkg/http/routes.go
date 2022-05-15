@@ -51,6 +51,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			patient.PATCH(":id", ph.UpdatePatient)
 			patient.GET("ins", ph.SearchPatientByINSMatricule)
 			patient.GET("card", ph.ReadCarteVitale)
+			patient.POST("csvbatchload", ph.BatchLoadPatients)
 		}
 
 		calendar := v1.Group("calendar")

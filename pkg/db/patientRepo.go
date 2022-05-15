@@ -1,10 +1,13 @@
 package db
 
 import (
+	"fmt"
 	"log"
 	"lupus/patapi/pkg/model"
 	"lupus/patapi/utils"
 	"strconv"
+
+	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -104,4 +107,27 @@ func (repo *DbSources) SearchPatientByINSMatricule(c *gin.Context, id string) (p
 		patients = append(patients, patient)
 	}
 	return patients, err
+}
+
+func (repo *DbSources) BatchLoad(c *gin.Context, p []interface{}) error {
+	if len(p) == 0 {
+		return errors.New("no patient to load")
+	}
+	queryArgs, err := utils.ReadStructToBeInserted(c, p[0])
+	if err != nil {
+		return err
+	}
+	fmt.Println("query: ", `INSERT INTO `+queryArgs[0]+` `+queryArgs[1]+` VALUES `+queryArgs[2])
+	_, err = repo.dbConn.NamedExec(`INSERT INTO `+queryArgs[0]+` `+queryArgs[1]+` VALUES `+queryArgs[2], p)
+	return err
+}
+
+func (repo *DbSources) BatchLoadPatients(c *gin.Context, p []model.Patient) error {
+	var err error
+	for _, patient := range p {
+		if errC := repo.CreatePatient(c, patient); errC != nil {
+			err = errors.Wrap(errC, "batch load patients")
+		}
+	}
+	return err
 }

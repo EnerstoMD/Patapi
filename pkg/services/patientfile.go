@@ -15,6 +15,7 @@ type PatService interface {
 	UpdatePatient(c *gin.Context, p model.Patient) error
 	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
 	ReadCarteVitale(c *gin.Context, p model.CardPeek) (model.Patient, error)
+	BatchLoadPatients(c *gin.Context, p []model.Patient) error
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -23,6 +24,7 @@ type Db interface {
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
 	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
+	BatchLoadPatients(c *gin.Context, p []model.Patient) error
 }
 
 type patService struct {
@@ -55,6 +57,10 @@ func (s *patService) UpdatePatient(c *gin.Context, p model.Patient) error {
 
 func (s *patService) SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error) {
 	return s.d.SearchPatientByINSMatricule(c, id)
+}
+
+func (s *patService) BatchLoadPatients(c *gin.Context, p []model.Patient) error {
+	return s.d.BatchLoadPatients(c, p)
 }
 
 func (s *patService) ReadCarteVitale(c *gin.Context, cp model.CardPeek) (patient model.Patient, e error) {
