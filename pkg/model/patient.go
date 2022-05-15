@@ -19,3 +19,8 @@ type Patient struct {
 	Phone          *string `json:"phone" db:"phone"`
 	Email          *string `json:"email" db:"email"`
 }
+
+type Pagination struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}

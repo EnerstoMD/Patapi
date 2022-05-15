@@ -47,6 +47,7 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			patient.GET("", ph.GetAllPatients)
 			patient.POST("", ph.CreatePatient)
 			patient.GET("search", ph.SearchPatientByName)
+			patient.GET("search/count", ph.CountSearchPatientByName)
 			patient.GET(":id", ph.GetPatientById)
 			patient.PATCH(":id", ph.UpdatePatient)
 			patient.GET("ins", ph.SearchPatientByINSMatricule)

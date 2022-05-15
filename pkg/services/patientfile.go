@@ -10,7 +10,8 @@ import (
 type PatService interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, p model.Patient) error
-	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
+	SearchPatientByName(c *gin.Context, nameOrId string, pagination model.Pagination) ([]model.Patient, error)
+	CountSearchPatientByName(c *gin.Context, nameOrId string) (int, error)
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
 	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
@@ -20,7 +21,8 @@ type PatService interface {
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, p model.Patient) error
-	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
+	SearchPatientByName(c *gin.Context, nameOrId string, pagination model.Pagination) ([]model.Patient, error)
+	CountSearchPatientByName(c *gin.Context, nameOrId string) (int, error)
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
 	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
@@ -43,8 +45,12 @@ func (s *patService) CreatePatient(c *gin.Context, p model.Patient) error {
 	return s.d.CreatePatient(c, p)
 }
 
-func (s *patService) SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error) {
-	return s.d.SearchPatientByName(c, nameOrId)
+func (s *patService) SearchPatientByName(c *gin.Context, nameOrId string, pagination model.Pagination) ([]model.Patient, error) {
+	return s.d.SearchPatientByName(c, nameOrId, pagination)
+}
+
+func (s *patService) CountSearchPatientByName(c *gin.Context, nameOrId string) (int, error) {
+	return s.d.CountSearchPatientByName(c, nameOrId)
 }
 
 func (s *patService) GetPatientById(c *gin.Context, id string) (model.Patient, error) {

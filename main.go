@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"lupus/patapi/pkg/auth"
 	"lupus/patapi/pkg/db"
 	handler "lupus/patapi/pkg/http"
@@ -8,13 +9,14 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// err := godotenv.Load(".env")
-	// if err != nil {
-	// 	log.Fatal("Error lodading .env file")
-	// }
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error lodading .env file")
+	}
 
 	DbSources := db.NewDbConnect()
 

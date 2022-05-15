@@ -20,7 +20,8 @@ type DbSources struct {
 type DbRepository interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
 	CreatePatient(c *gin.Context, patient model.Patient) error
-	SearchPatientByName(c *gin.Context, nameOrId string) ([]model.Patient, error)
+	SearchPatientByName(c *gin.Context, nameOrId string, pagination model.Pagination) ([]model.Patient, error)
+	CountSearchPatientByName(c *gin.Context, nameOrId string) (int, error)
 	GetPatientById(c *gin.Context, id string) (model.Patient, error)
 	UpdatePatient(c *gin.Context, p model.Patient) error
 	SearchPatientByINSMatricule(c *gin.Context, nameOrId string) (patients []model.Patient, err error)

@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/csv"
-	"log"
 	"lupus/patapi/pkg/model"
 	service "lupus/patapi/pkg/services"
+	"lupus/patapi/utils"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -17,6 +17,7 @@ type PatientHandler interface {
 	GetAllPatients(ctx *gin.Context)
 	CreatePatient(ctx *gin.Context)
 	SearchPatientByName(ctx *gin.Context)
+	CountSearchPatientByName(c *gin.Context)
 	GetPatientById(ctx *gin.Context)
 	UpdatePatient(ctx *gin.Context)
 	SearchPatientByINSMatricule(c *gin.Context)
@@ -59,33 +60,38 @@ func (patientHandler *patientHandler) CreatePatient(c *gin.Context) {
 }
 
 func (patientHandler *patientHandler) SearchPatientByName(c *gin.Context) {
-	// var searchedPatient model.Patient
-	// if err := c.BindJSON(&searchedPatient); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient", "error": err.Error()})
-	// 	return
-	// }
 	nameOrId := c.Query("name")
-	log.Println("nameOrId: ", nameOrId)
 	if nameOrId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "no patient searched"})
 		return
 	}
-	//var nameOrId string
-
-	// switch {
-	// case *searchedPatient.Name != "":
-	// 	nameOrId = *searchedPatient.Name
-	// case *searchedPatient.Lastname != "":
-	// 	nameOrId = *searchedPatient.Lastname
-	// case *searchedPatient.InsMatricule != "":
-	// 	nameOrId = *searchedPatient.InsMatricule
-	// }
-	patients, err := patientHandler.patienfileService.SearchPatientByName(c, nameOrId)
+	if nameOrId == "*" {
+		nameOrId = ""
+	}
+	pagination := utils.GeneratePaginationFromRequest(c)
+	patients, err := patientHandler.patienfileService.SearchPatientByName(c, nameOrId, pagination)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get all patients", "error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, patients)
+}
+
+func (patientHandler *patientHandler) CountSearchPatientByName(c *gin.Context) {
+	nameOrId := c.Query("name")
+	if nameOrId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "no patient searched"})
+		return
+	}
+	if nameOrId == "*" {
+		nameOrId = ""
+	}
+	count, err := patientHandler.patienfileService.CountSearchPatientByName(c, nameOrId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't count all patients", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, count)
 }
 
 func (patientHandler *patientHandler) GetPatientById(ctx *gin.Context) {

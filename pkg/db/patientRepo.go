@@ -50,8 +50,10 @@ func (repo *DbSources) CreatePatient(ctx *gin.Context, patient model.Patient) er
 	return err
 }
 
-func (repo *DbSources) SearchPatientByName(c *gin.Context, nameOrId string) (patients []model.Patient, err error) {
-	query := `SELECT * FROM patient WHERE (name LIKE '%` + nameOrId + `%' OR lastname LIKE '%` + nameOrId + `%')`
+func (repo *DbSources) SearchPatientByName(c *gin.Context, nameOrId string, pagination model.Pagination) (patients []model.Patient, err error) {
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	query := `SELECT * FROM patient WHERE (name LIKE '%` + nameOrId + `%' OR lastname LIKE '%` + nameOrId + `%') ORDER BY id LIMIT ` + strconv.Itoa(pagination.Limit) + ` OFFSET ` + strconv.Itoa(offset)
 	if numSecu, err := strconv.Atoi(nameOrId); err == nil && numSecu > 99999999999999 {
 		query = `SELECT * FROM patient WHERE ins_matricule=` + nameOrId
 	}
@@ -66,6 +68,13 @@ func (repo *DbSources) SearchPatientByName(c *gin.Context, nameOrId string) (pat
 		patients = append(patients, patient)
 	}
 	return patients, err
+}
+
+func (repo *DbSources) CountSearchPatientByName(c *gin.Context, nameOrId string) (int, error) {
+	query := `SELECT count(*) FROM patient WHERE (name LIKE '%` + nameOrId + `%' OR lastname LIKE '%` + nameOrId + `%')`
+	var count int
+	err := repo.dbConn.Get(&count, query)
+	return count, err
 }
 
 func (repo *DbSources) GetPatientById(c *gin.Context, id string) (patient model.Patient, err error) {
