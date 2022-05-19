@@ -65,7 +65,6 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			calendar.PATCH(":id/confirm", ch.ConfirmEvent)
 			calendar.PATCH(":id/unconfirm", ch.UnconfirmEvent)
 		}
-
 	}
 
 }
