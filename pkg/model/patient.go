@@ -24,3 +24,10 @@ type Pagination struct {
 	Page  int `json:"page"`
 	Limit int `json:"limit"`
 }
+
+type PatientComment struct {
+	Id        *string `json:"id" db:"id"`
+	Comment   *string `json:"comment" db:"comment"`
+	AddedBy   *string `json:"added_by" db:"added_by"`
+	PatientId *string `json:"patient_id" db:"patient_id"`
+}

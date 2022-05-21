@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/csv"
+	"fmt"
 	"lupus/patapi/pkg/model"
 	service "lupus/patapi/pkg/services"
 	"lupus/patapi/utils"
@@ -23,6 +24,7 @@ type PatientHandler interface {
 	SearchPatientByINSMatricule(c *gin.Context)
 	ReadCarteVitale(c *gin.Context)
 	BatchLoadPatients(c *gin.Context)
+	CreatePatientComment(c *gin.Context)
 }
 
 type patientHandler struct {
@@ -231,4 +233,34 @@ func (patientHandler *patientHandler) BatchLoadPatients(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"status": 201, "msg": patients})
+}
+
+func (patientHandler *patientHandler) CreatePatientComment(c *gin.Context) {
+	var comment model.PatientComment
+	patId := c.Param("id")
+
+	if err := c.BindJSON(&comment); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read comment", "error": err.Error()})
+		return
+	}
+	if comment.PatientId == nil {
+		comment.PatientId = &patId
+	}
+	if comment.PatientId != &patId {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient id not matching"})
+		return
+	}
+	addedby := fmt.Sprintf("%v", c.Keys["userId"])
+	if addedby == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read userId"})
+		return
+	}
+	comment.AddedBy = &addedby
+
+	err := patientHandler.patienfileService.CreatePatientComment(c, comment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't create patient comment", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"status": 201, "msg": "patient comment created"})
 }

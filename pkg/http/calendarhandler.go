@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"lupus/patapi/pkg/model"
 	calendar "lupus/patapi/pkg/services"
 	"net/http"
@@ -41,6 +42,12 @@ func (calendarHandler *calendarHandler) CreateEvent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read event", "error": err.Error()})
 		return
 	}
+	createdby := fmt.Sprintf("%v", c.Keys["userId"])
+	if createdby == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read userId", "error": "userId not found"})
+		return
+	}
+	newEvent.CreatedBy = &createdby
 	err := calendarHandler.calendarService.CreateEvent(c, newEvent)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't insert event into db", "error": err.Error()})
