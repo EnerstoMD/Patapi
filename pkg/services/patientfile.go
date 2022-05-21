@@ -21,6 +21,8 @@ type PatService interface {
 	CreatePatientComment(c *gin.Context, p model.PatientComment) error
 	GetPatientComments(c *gin.Context, id string) ([]model.PatientComment, error)
 	DeletePatientComment(c *gin.Context, id, commentId string) error
+
+	RegisterPatientDisease(c *gin.Context, p model.PatientDisease) error
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -34,6 +36,7 @@ type Db interface {
 	CreatePatientComment(c *gin.Context, p model.PatientComment) error
 	GetPatientComments(c *gin.Context, id string) ([]model.PatientComment, error)
 	DeletePatientComment(c *gin.Context, id, commentId string) error
+	RegisterPatientDisease(c *gin.Context, p model.PatientDisease) error
 }
 
 type patService struct {
@@ -125,4 +128,8 @@ func (s *patService) GetPatientComments(c *gin.Context, id string) ([]model.Pati
 
 func (s *patService) DeletePatientComment(c *gin.Context, id, commentId string) error {
 	return s.d.DeletePatientComment(c, id, commentId)
+}
+
+func (s *patService) RegisterPatientDisease(c *gin.Context, p model.PatientDisease) error {
+	return s.d.RegisterPatientDisease(c, p)
 }

@@ -24,9 +24,14 @@ type PatientHandler interface {
 	SearchPatientByINSMatricule(c *gin.Context)
 	ReadCarteVitale(c *gin.Context)
 	BatchLoadPatients(c *gin.Context)
+
 	CreatePatientComment(c *gin.Context)
 	GetPatientComments(c *gin.Context)
 	DeletePatientComment(c *gin.Context)
+
+	RegisterPatientDisease(c *gin.Context)
+	// GetPatientDiseases(c *gin.Context)
+	// DeletePatientDisease(c *gin.Context)
 }
 
 type patientHandler struct {
@@ -291,3 +296,31 @@ func (patientHandler *patientHandler) DeletePatientComment(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient comment deleted"})
 }
+
+func (patientHandler *patientHandler) RegisterPatientDisease(c *gin.Context) {
+	var patientDisease model.PatientDisease
+	if err := c.BindJSON(&patientDisease); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient disease", "error": err.Error()})
+		return
+	}
+
+	if patientDisease.PatientId == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient id not set"})
+		return
+	}
+	addedby := fmt.Sprintf("%v", c.Keys["userId"])
+	if addedby == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read userId"})
+		return
+	}
+	patientDisease.AddedBy = &addedby
+	err := patientHandler.patienfileService.RegisterPatientDisease(c, patientDisease)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't register patient disease", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"status": 201, "msg": "patient disease registered"})
+}
+
+// GetPatientDiseases(c *gin.Context)
+// DeletePatientDisease(c *gin.Context)

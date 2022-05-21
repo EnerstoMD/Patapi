@@ -65,28 +65,33 @@ func ReadStructToBeInserted(c *gin.Context, T interface{}) ([]string, error) {
 	t := reflect.TypeOf(T)
 	rv := reflect.ValueOf(T)
 	var args []string
-	//var vals []string
+	var vals []string
 	for i := 0; i < t.NumField(); i++ {
 		valueptr := rv.Field(i)
 		if valueptr.Kind() == reflect.Ptr {
 			valueptr = valueptr.Elem()
 		}
-		//value := `'` + valueptr.String() + `'`
+		value := `'` + valueptr.String() + `'`
 		arg, filled := t.Field(i).Tag.Lookup("db")
 		if !filled || !valueptr.IsValid() {
 			continue
 		}
 		args = append(args, arg)
-		//vals = append(vals, value)
+		vals = append(vals, value)
 	}
 	table := CamelToSnakeCase(t.Name())
 	queryargs := `(` + strings.Join(args, ",") + `)`
 	queryvals := `(:` + strings.Join(args, ", :") + `)`
-	return []string{table, queryargs, queryvals}, nil
+	values := `(` + strings.Join(vals, ",") + `)`
+	return []string{table, queryargs, queryvals, values}, nil
 }
 
 func CamelToSnakeCase(str string) string {
 	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
 	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
 	return strings.ToLower(snake)
+}
+
+func InsertInsideQueryString(query string, arg string) string {
+	return strings.Replace(query, ")", ","+arg+")", 1)
 }
