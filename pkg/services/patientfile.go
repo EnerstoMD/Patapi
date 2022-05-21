@@ -19,6 +19,8 @@ type PatService interface {
 	BatchLoadPatients(c *gin.Context, p []model.Patient) error
 
 	CreatePatientComment(c *gin.Context, p model.PatientComment) error
+	GetPatientComments(c *gin.Context, id string) ([]model.PatientComment, error)
+	DeletePatientComment(c *gin.Context, id, commentId string) error
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -30,6 +32,8 @@ type Db interface {
 	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
 	BatchLoadPatients(c *gin.Context, p []model.Patient) error
 	CreatePatientComment(c *gin.Context, p model.PatientComment) error
+	GetPatientComments(c *gin.Context, id string) ([]model.PatientComment, error)
+	DeletePatientComment(c *gin.Context, id, commentId string) error
 }
 
 type patService struct {
@@ -113,4 +117,12 @@ func (s *patService) ReadCarteVitale(c *gin.Context, cp model.CardPeek) (patient
 
 func (s *patService) CreatePatientComment(c *gin.Context, p model.PatientComment) error {
 	return s.d.CreatePatientComment(c, p)
+}
+
+func (s *patService) GetPatientComments(c *gin.Context, id string) ([]model.PatientComment, error) {
+	return s.d.GetPatientComments(c, id)
+}
+
+func (s *patService) DeletePatientComment(c *gin.Context, id, commentId string) error {
+	return s.d.DeletePatientComment(c, id, commentId)
 }

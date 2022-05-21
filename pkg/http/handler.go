@@ -25,6 +25,8 @@ type PatientHandler interface {
 	ReadCarteVitale(c *gin.Context)
 	BatchLoadPatients(c *gin.Context)
 	CreatePatientComment(c *gin.Context)
+	GetPatientComments(c *gin.Context)
+	DeletePatientComment(c *gin.Context)
 }
 
 type patientHandler struct {
@@ -263,4 +265,29 @@ func (patientHandler *patientHandler) CreatePatientComment(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"status": 201, "msg": "patient comment created"})
+}
+
+func (patientHandler *patientHandler) GetPatientComments(c *gin.Context) {
+	patId := c.Param("id")
+	comments, err := patientHandler.patienfileService.GetPatientComments(c, patId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get patient comments", "error": err.Error()})
+		return
+	}
+	if len(comments) == 0 {
+		c.JSON(http.StatusNoContent, gin.H{"status": 204, "message": "no patient comments found"})
+		return
+	}
+	c.JSON(http.StatusOK, comments)
+}
+
+func (patientHandler *patientHandler) DeletePatientComment(c *gin.Context) {
+	patId := c.Param("id")
+	commentId := c.Param("commentid")
+	err := patientHandler.patienfileService.DeletePatientComment(c, patId, commentId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't delete patient comment", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient comment deleted"})
 }

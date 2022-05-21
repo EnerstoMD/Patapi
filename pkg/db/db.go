@@ -28,6 +28,10 @@ type DbRepository interface {
 	BatchLoadPatients(c *gin.Context, p []model.Patient) error
 	BatchLoad(c *gin.Context, p []interface{}) error
 
+	CreatePatientComment(c *gin.Context, p model.PatientComment) error
+	GetPatientComments(c *gin.Context, id string) ([]model.PatientComment, error)
+	DeletePatientComment(c *gin.Context, id, commentId string) error
+
 	GetAllEvents(c *gin.Context) ([]model.Event, error)
 	CreateEvent(c *gin.Context, e model.Event) error
 	UpdateEvent(c *gin.Context, e model.Event) error
