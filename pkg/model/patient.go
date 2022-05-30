@@ -24,3 +24,62 @@ type Pagination struct {
 	Page  int `json:"page"`
 	Limit int `json:"limit"`
 }
+
+type PatientComment struct {
+	Id        *string `json:"id" db:"id"`
+	Comment   *string `json:"comment" db:"comment"`
+	AddedBy   *string `json:"added_by" db:"added_by"`
+	PatientId *string `json:"patient_id" db:"patient_id"`
+}
+
+type Disease struct {
+	Id          *string `json:"id" db:"id"`
+	Name        *string `json:"name" db:"name"`
+	Description *string `json:"description" db:"description"`
+}
+
+type PatientDisease struct {
+	Id         *string `json:"id" db:"id"`
+	PatientId  *string `json:"patient_id" db:"patient_id"`
+	Disease    Disease `json:"disease"`
+	Comment    *string `json:"comment" db:"comment"`
+	StartDate  *string `json:"start_date" db:"start_date"`
+	EndDate    *string `json:"end_date" db:"end_date"`
+	InProgress *string `json:"in_progress" db:"in_progress"`
+	AddedBy    *string `json:"added_by" db:"added_by"`
+}
+
+type Allergy struct {
+	Id          *string `json:"id" db:"id"`
+	Name        *string `json:"name" db:"name"`
+	Description *string `json:"description" db:"description"`
+}
+
+type PatientAllergy struct {
+	Id         *string `json:"id" db:"id"`
+	PatientId  *string `json:"patient_id" db:"patient_id"`
+	Allergy    Allergy `json:"allergy"`
+	Comment    *string `json:"comment" db:"comment"`
+	StartDate  *string `json:"start_date" db:"start_date"`
+	EndDate    *string `json:"end_date" db:"end_date"`
+	InProgress *string `json:"in_progress" db:"in_progress"`
+	AddedBy    *string `json:"added_by" db:"added_by"`
+}
+
+type Treatment struct {
+	Id          *string `json:"id" db:"id"`
+	Name        *string `json:"name" db:"name"`
+	Description *string `json:"description" db:"description"`
+	Comment     *string `json:"comment" db:"comment"`
+}
+
+type PatientTreatment struct {
+	Id         *string   `json:"id" db:"id"`
+	PatientId  *string   `json:"patient_id" db:"patient_id"`
+	Treatment  Treatment `json:"treatment"`
+	Comment    *string   `json:"comment" db:"comment"`
+	StartDate  *string   `json:"start_date" db:"start_date"`
+	EndDate    *string   `json:"end_date" db:"end_date"`
+	InProgress *string   `json:"in_progress" db:"in_progress"`
+	AddedBy    *string   `json:"added_by" db:"added_by"`
+}

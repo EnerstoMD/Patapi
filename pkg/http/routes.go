@@ -53,6 +53,25 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			patient.GET("ins", ph.SearchPatientByINSMatricule)
 			patient.GET("card", ph.ReadCarteVitale)
 			patient.POST("csvbatchload", ph.BatchLoadPatients)
+
+			patient.POST(":id/comment", ph.CreatePatientComment)
+			patient.GET(":id/comment", ph.GetPatientComments)
+			patient.DELETE(":id/comment/:commentid", ph.DeletePatientComment)
+
+			patient.POST(":id/disease", ph.RegisterPatientDisease)
+			patient.GET(":id/disease", ph.GetPatientDiseases)
+			patient.DELETE(":id/disease/:patdiseaseid", ph.DeletePatientDisease)
+			patient.PATCH(":id/disease/:diseaseid", ph.UpdatePatientDisease)
+
+			patient.POST(":id/allergy", ph.RegisterPatientAllergy)
+			patient.GET(":id/allergy", ph.GetPatientAllergies)
+			patient.DELETE(":id/allergy/:patallergyid", ph.DeletePatientAllergy)
+			patient.PATCH(":id/allergy/:allergyid", ph.UpdatePatientAllergy)
+
+			patient.POST(":id/treatment", ph.RegisterPatientTreatment)
+			patient.GET(":id/treatment", ph.GetPatientTreatments)
+			patient.DELETE(":id/treatment/:pattreatmentid", ph.DeletePatientTreatment)
+			patient.PATCH(":id/treatment/:treatmentid", ph.UpdatePatientTreatment)
 		}
 
 		calendar := v1.Group("calendar")
@@ -65,7 +84,6 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			calendar.PATCH(":id/confirm", ch.ConfirmEvent)
 			calendar.PATCH(":id/unconfirm", ch.UnconfirmEvent)
 		}
-
 	}
 
 }

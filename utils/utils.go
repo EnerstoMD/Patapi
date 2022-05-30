@@ -2,12 +2,15 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
+
+var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 
 func PrepareSQLInsertStatement(c *gin.Context, T interface{}) (string, error) {
 	t := reflect.TypeOf(T)
@@ -26,13 +29,7 @@ func PrepareSQLInsertStatement(c *gin.Context, T interface{}) (string, error) {
 		args = append(args, arg)
 		vals = append(vals, value)
 	}
-	table := strings.ToLower(t.Name())
-	if table == "event" {
-		queryargs := `(` + strings.Join(args, ",") + `,created_by)`
-		queryvals := `(` + strings.Join(vals, ",") + `,` + fmt.Sprintf("%v", c.Keys["userId"]) + `)`
-		query := `INSERT INTO public.` + strings.ToLower(t.Name()) + ` ` + queryargs + ` VALUES ` + queryvals
-		return query, nil
-	}
+	table := CamelToSnakeCase(t.Name())
 	queryargs := `(` + strings.Join(args, ",") + `)`
 	queryvals := `(` + strings.Join(vals, ",") + `)`
 
@@ -60,14 +57,15 @@ func PrepareSQLUpdateStatement(T interface{}, id string) (string, error) {
 	if len(setColums) == 0 {
 		return "", errors.New("no attributes to update")
 	}
-	query := `UPDATE public.` + strings.ToLower(t.Name()) + ` SET ` + strings.Join(setColums, ",") + ` WHERE id= ` + id
+	query := `UPDATE public.` + CamelToSnakeCase(t.Name()) + ` SET ` + strings.Join(setColums, ",") + ` WHERE id= ` + id
 	return query, nil
 }
 
 func ReadStructToBeInserted(c *gin.Context, T interface{}) ([]string, error) {
 	t := reflect.TypeOf(T)
 	rv := reflect.ValueOf(T)
-	var args, vals []string
+	var args []string
+	var vals []string
 	for i := 0; i < t.NumField(); i++ {
 		valueptr := rv.Field(i)
 		if valueptr.Kind() == reflect.Ptr {
@@ -81,14 +79,19 @@ func ReadStructToBeInserted(c *gin.Context, T interface{}) ([]string, error) {
 		args = append(args, arg)
 		vals = append(vals, value)
 	}
-	table := strings.ToLower(t.Name())
-	if table == "event" {
-		queryargs := `(` + strings.Join(args, ",") + `,created_by)`
-		queryvals := `(:` + strings.Join(vals, ", :") + `,` + fmt.Sprintf("%v:", c.Keys["userId"]) + `)`
-		return []string{table, queryargs, queryvals}, nil
-	}
-
+	table := CamelToSnakeCase(t.Name())
 	queryargs := `(` + strings.Join(args, ",") + `)`
 	queryvals := `(:` + strings.Join(args, ", :") + `)`
-	return []string{table, queryargs, queryvals}, nil
+	values := `(` + strings.Join(vals, ",") + `)`
+	return []string{table, queryargs, queryvals, values}, nil
+}
+
+func CamelToSnakeCase(str string) string {
+	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+	return strings.ToLower(snake)
+}
+
+func InsertInsideQueryString(query string, arg string) string {
+	return strings.Replace(query, ")", ","+arg+")", 1)
 }

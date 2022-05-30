@@ -4,3 +4,4 @@ patapi
 .vscode
 *.pem
 Makefile
+db/data

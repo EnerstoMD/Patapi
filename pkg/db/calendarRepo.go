@@ -1,7 +1,6 @@
 package db
 
 import (
-	"log"
 	"lupus/patapi/pkg/model"
 	"lupus/patapi/utils"
 
@@ -10,7 +9,6 @@ import (
 
 func (repo *DbSources) DeleteEvent(ctx *gin.Context, id string) error {
 	q := `DELETE FROM event WHERE id=` + id
-	log.Println(q)
 	return repo.execQuery(q)
 }
 
@@ -25,6 +23,9 @@ func (repo *DbSources) GetAllEvents(ctx *gin.Context) (events []model.Event, err
 		}
 		query2 := "select * from patient where id in (select patient_id from event_patientgroup where event_id=" + *ev.Id + ")"
 		rows2, err := repo.dbConn.Queryx(query2)
+		if err != nil {
+			return events, err
+		}
 		for rows2.Next() {
 			p := model.Patient{}
 			err = rows2.StructScan(&p)

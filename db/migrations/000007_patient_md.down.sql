@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS patient_md;
+DROP TABLE IF EXISTS md;
