@@ -140,3 +140,83 @@ func (repo *DbSources) BatchLoadPatients(c *gin.Context, p []model.Patient) erro
 	}
 	return err
 }
+
+func (repo *DbSources) RegisterHospitalisation(c *gin.Context, patient model.Hospitalisation) error {
+	query, err := utils.PrepareSQLInsertStatement(c, patient)
+	if err != nil {
+		return err
+	}
+	tx, err := repo.dbConn.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	if _, err = tx.Exec(query); err != nil {
+		return err
+	}
+	return err
+}
+
+func (repo *DbSources) GetHospitalisations(c *gin.Context, patient_id string) (hosp []model.Hospitalisation, err error) {
+	rows, err := repo.dbConn.Queryx(`SELECT * FROM hospitalisation WHERE patient_id=$1`, patient_id)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		hos := model.Hospitalisation{}
+		err = rows.StructScan(&hos)
+		hosp = append(hosp, hos)
+	}
+	return hosp, err
+}
+
+func (repo *DbSources) DeleteHospitalisation(c *gin.Context, patient_id, id string) error {
+	query := `DELETE FROM hospitalisation WHERE id=$1 and patient_id=$2`
+	tx, err := repo.dbConn.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	if _, err = tx.Exec(query, id, patient_id); err != nil {
+		return err
+	}
+	return err
+}
+
+func (repo *DbSources) UpdateHospitalisation(c *gin.Context, hos model.Hospitalisation) error {
+	query, err := utils.PrepareSQLUpdateStatement(hos, *hos.Id)
+	if err != nil {
+		return err
+	}
+	tx, err := repo.dbConn.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	if _, err = tx.Exec(query); err != nil {
+		return err
+	}
+	return err
+}

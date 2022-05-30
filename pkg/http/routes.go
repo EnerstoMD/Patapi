@@ -77,6 +77,11 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			patient.GET(":id/history", ph.GetPatientHistory)
 			patient.DELETE(":id/history/:patHistoryId", ph.DeletePatientHistory)
 			patient.PATCH(":id/history/:historyid", ph.UpdatePatientHistory)
+
+			patient.POST(":id/hospitalisation", ph.RegisterHospitalisation)
+			patient.GET(":id/hospitalisation", ph.GetHospitalisations)
+			patient.DELETE(":id/hospitalisation/:patHospitalisationId", ph.DeleteHospitalisation)
+			patient.PATCH(":id/hospitalisation/:hospitalisationid", ph.UpdateHospitalisation)
 		}
 
 		calendar := v1.Group("calendar")
