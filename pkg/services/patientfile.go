@@ -26,10 +26,16 @@ type PatService interface {
 	GetPatientDiseases(c *gin.Context, patId string) ([]model.PatientDisease, error)
 	DeletePatientDisease(c *gin.Context, patId, diseaseId string) error
 	UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error
+
 	RegisterPatientAllergy(c *gin.Context, p model.PatientAllergy) error
 	GetPatientAllergies(c *gin.Context, patId string) ([]model.PatientAllergy, error)
 	DeletePatientAllergy(c *gin.Context, patId, allergyId string) error
 	UpdatePatientAllergy(c *gin.Context, patientAllergy model.PatientAllergy) error
+
+	RegisterPatientTreatment(c *gin.Context, p model.PatientTreatment) error
+	GetPatientTreatments(c *gin.Context, patId string) ([]model.PatientTreatment, error)
+	DeletePatientTreatment(c *gin.Context, patId, treatmentId string) error
+	UpdatePatientTreatment(c *gin.Context, patientTreatment model.PatientTreatment) error
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -49,10 +55,16 @@ type Db interface {
 	GetPatientDiseases(c *gin.Context, patId string) ([]model.PatientDisease, error)
 	DeletePatientDisease(c *gin.Context, patId, diseaseId string) error
 	UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error
+
 	RegisterPatientAllergy(c *gin.Context, p model.PatientAllergy) error
 	GetPatientAllergies(c *gin.Context, patId string) ([]model.PatientAllergy, error)
 	DeletePatientAllergy(c *gin.Context, patId, allergyId string) error
 	UpdatePatientAllergy(c *gin.Context, patientAllergy model.PatientAllergy) error
+
+	RegisterPatientTreatment(c *gin.Context, p model.PatientTreatment) error
+	GetPatientTreatments(c *gin.Context, patId string) ([]model.PatientTreatment, error)
+	DeletePatientTreatment(c *gin.Context, patId, treatmentId string) error
+	UpdatePatientTreatment(c *gin.Context, patientTreatment model.PatientTreatment) error
 }
 
 type patService struct {
@@ -176,4 +188,20 @@ func (s *patService) DeletePatientAllergy(c *gin.Context, patId, allergyId strin
 
 func (s *patService) UpdatePatientAllergy(c *gin.Context, patientAllergy model.PatientAllergy) error {
 	return s.d.UpdatePatientAllergy(c, patientAllergy)
+}
+
+func (s *patService) RegisterPatientTreatment(c *gin.Context, p model.PatientTreatment) error {
+	return s.d.RegisterPatientTreatment(c, p)
+}
+
+func (s *patService) GetPatientTreatments(c *gin.Context, patId string) ([]model.PatientTreatment, error) {
+	return s.d.GetPatientTreatments(c, patId)
+}
+
+func (s *patService) DeletePatientTreatment(c *gin.Context, patId, treatmentId string) error {
+	return s.d.DeletePatientTreatment(c, patId, treatmentId)
+}
+
+func (s *patService) UpdatePatientTreatment(c *gin.Context, patientTreatment model.PatientTreatment) error {
+	return s.d.UpdatePatientTreatment(c, patientTreatment)
 }
