@@ -427,10 +427,10 @@ func (patientHandler *patientHandler) DeletePatientAllergy(c *gin.Context) {
 	patallergyId := c.Param("patallergyid")
 	err := patientHandler.patienfileService.DeletePatientAllergy(c, patId, patallergyId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't delete patient disease", "error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't delete patient allergy", "error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient disease deleted"})
+	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient allergy deleted"})
 }
 
 func (patientHandler *patientHandler) UpdatePatientAllergy(c *gin.Context) {
@@ -438,11 +438,11 @@ func (patientHandler *patientHandler) UpdatePatientAllergy(c *gin.Context) {
 	patId := c.Param("id")
 	diseaseId := c.Param("allergyid")
 	if err := c.BindJSON(&patientAllergy); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient disease", "error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient allergy", "error": err.Error()})
 		return
 	}
 	if patientAllergy.Id == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient disease id not set"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient allergy id not set"})
 		return
 	}
 	if patientAllergy.PatientId == nil {
@@ -452,13 +452,13 @@ func (patientHandler *patientHandler) UpdatePatientAllergy(c *gin.Context) {
 		patientAllergy.Allergy.Id = &diseaseId
 	}
 	if patId != *patientAllergy.PatientId || diseaseId != *patientAllergy.Allergy.Id {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient id or disease id not matching"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient id or allergy id not matching"})
 		return
 	}
 	err := patientHandler.patienfileService.UpdatePatientAllergy(c, patientAllergy)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't update patient disease", "error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't update patient allergy", "error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient disease updated"})
+	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient allergy updated"})
 }
