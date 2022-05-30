@@ -43,6 +43,11 @@ type PatientHandler interface {
 	GetPatientTreatments(c *gin.Context)
 	DeletePatientTreatment(c *gin.Context)
 	UpdatePatientTreatment(c *gin.Context)
+
+	RegisterPatientHistory(c *gin.Context)
+	GetPatientHistory(c *gin.Context)
+	DeletePatientHistory(c *gin.Context)
+	UpdatePatientHistory(c *gin.Context)
 }
 
 type patientHandler struct {
@@ -546,4 +551,76 @@ func (patientHandler *patientHandler) UpdatePatientTreatment(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient treatment updated"})
+}
+
+func (patientHandler *patientHandler) RegisterPatientHistory(c *gin.Context) {
+	var patientHistory model.PatientHistory
+	if err := c.BindJSON(&patientHistory); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient history", "error": err.Error()})
+		return
+	}
+
+	if patientHistory.PatientId == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient id not set"})
+		return
+	}
+
+	err := patientHandler.patienfileService.RegisterPatientHistory(c, patientHistory)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't register patient history", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"status": 201, "msg": "patient history registered"})
+}
+
+func (patientHandler *patientHandler) GetPatientHistory(c *gin.Context) {
+	patId := c.Param("id")
+	histories, err := patientHandler.patienfileService.GetPatientHistory(c, patId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get patient history", "error": err.Error()})
+		return
+	}
+	if len(histories) == 0 {
+		c.JSON(http.StatusNoContent, gin.H{"status": 204, "message": "no patient history found"})
+		return
+	}
+	c.JSON(http.StatusOK, histories)
+}
+
+func (patientHandler *patientHandler) DeletePatientHistory(c *gin.Context) {
+	patId := c.Param("id")
+	patHistoryId := c.Param("patHistoryId")
+	err := patientHandler.patienfileService.DeletePatientHistory(c, patId, patHistoryId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't delete patient history", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient history deleted"})
+}
+
+func (patientHandler *patientHandler) UpdatePatientHistory(c *gin.Context) {
+	var patientHistory model.PatientHistory
+	patId := c.Param("id")
+	historyId := c.Param("historyid")
+	if err := c.BindJSON(&patientHistory); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient history", "error": err.Error()})
+		return
+	}
+	if patientHistory.Id == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient history id not set"})
+		return
+	}
+	if patientHistory.PatientId == nil {
+		patientHistory.PatientId = &patId
+	}
+	if patId != *patientHistory.PatientId || historyId != *patientHistory.Id {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient id not matching"})
+		return
+	}
+	err := patientHandler.patienfileService.UpdatePatientHistory(c, patientHistory)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't update patient history", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient history updated"})
 }

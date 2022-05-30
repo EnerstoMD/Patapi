@@ -36,6 +36,11 @@ type PatService interface {
 	GetPatientTreatments(c *gin.Context, patId string) ([]model.PatientTreatment, error)
 	DeletePatientTreatment(c *gin.Context, patId, treatmentId string) error
 	UpdatePatientTreatment(c *gin.Context, patientTreatment model.PatientTreatment) error
+
+	RegisterPatientHistory(c *gin.Context, p model.PatientHistory) error
+	GetPatientHistory(c *gin.Context, patId string) ([]model.PatientHistory, error)
+	DeletePatientHistory(c *gin.Context, patId, historyId string) error
+	UpdatePatientHistory(c *gin.Context, patientHistory model.PatientHistory) error
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -65,6 +70,11 @@ type Db interface {
 	GetPatientTreatments(c *gin.Context, patId string) ([]model.PatientTreatment, error)
 	DeletePatientTreatment(c *gin.Context, patId, treatmentId string) error
 	UpdatePatientTreatment(c *gin.Context, patientTreatment model.PatientTreatment) error
+
+	RegisterPatientHistory(c *gin.Context, p model.PatientHistory) error
+	GetPatientHistory(c *gin.Context, patId string) ([]model.PatientHistory, error)
+	DeletePatientHistory(c *gin.Context, patId, historyId string) error
+	UpdatePatientHistory(c *gin.Context, patientHistory model.PatientHistory) error
 }
 
 type patService struct {
@@ -204,4 +214,20 @@ func (s *patService) DeletePatientTreatment(c *gin.Context, patId, treatmentId s
 
 func (s *patService) UpdatePatientTreatment(c *gin.Context, patientTreatment model.PatientTreatment) error {
 	return s.d.UpdatePatientTreatment(c, patientTreatment)
+}
+
+func (s *patService) RegisterPatientHistory(c *gin.Context, p model.PatientHistory) error {
+	return s.d.RegisterPatientHistory(c, p)
+}
+
+func (s *patService) GetPatientHistory(c *gin.Context, patId string) ([]model.PatientHistory, error) {
+	return s.d.GetPatientHistory(c, patId)
+}
+
+func (s *patService) DeletePatientHistory(c *gin.Context, patId, historyId string) error {
+	return s.d.DeletePatientHistory(c, patId, historyId)
+}
+
+func (s *patService) UpdatePatientHistory(c *gin.Context, patientHistory model.PatientHistory) error {
+	return s.d.UpdatePatientHistory(c, patientHistory)
 }

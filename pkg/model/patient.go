@@ -83,3 +83,20 @@ type PatientTreatment struct {
 	InProgress *string   `json:"in_progress" db:"in_progress"`
 	AddedBy    *string   `json:"added_by" db:"added_by"`
 }
+
+type Hospitalisation struct {
+	Id        *string `json:"id" db:"id"`
+	Motive    *string `json:"motive" db:"motive"`
+	Comment   *string `json:"comment" db:"comment"`
+	StartDate *string `json:"start_date" db:"start_date"`
+	EndDate   *string `json:"end_date" db:"end_date"`
+	PatientId *string `json:"patient_id" db:"patient_id"`
+}
+
+type PatientHistory struct {
+	Id               *string `json:"id" db:"id"`
+	PatientId        *string `json:"patient_id" db:"patient_id"`
+	Disease          Disease `json:"disease"`
+	Comment          *string `json:"comment" db:"comment"`
+	FamilyConnection *string `json:"family_connection" db:"family_connection"`
+}
