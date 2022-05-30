@@ -94,3 +94,50 @@ func (repo *DbSources) FindDiseaseById(c *gin.Context, id string) (model.Disease
 	err := repo.dbConn.Get(&d, `SELECT * FROM disease WHERE id = $1`, id)
 	return d, err
 }
+
+func (repo *DbSources) GetPatientDiseases(c *gin.Context, patientId string) ([]model.PatientDisease, error) {
+	var diseases []model.PatientDisease
+	rows, err := repo.dbConn.Queryx(`SELECT id,patient_id,start_date,end_date,comment,in_progress,added_by,disease_id FROM patient_disease WHERE patient_id = $1`, patientId)
+	//err := repo.dbConn.Select(&diseases, `SELECT * FROM patient_disease WHERE patient_id = $1`, patientId)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var d model.PatientDisease
+		var diseaseId string
+
+		err = rows.Scan(&d.Id, &d.PatientId, &d.StartDate, &d.EndDate, &d.Comment, &d.InProgress, &d.AddedBy, &diseaseId)
+		if err != nil {
+			return nil, err
+		}
+
+		d.Disease, err = repo.FindDiseaseById(c, diseaseId)
+		if err != nil {
+			return nil, err
+		}
+		diseases = append(diseases, d)
+	}
+	return diseases, err
+}
+
+func (repo *DbSources) DeletePatientDisease(c *gin.Context, patientId, id string) error {
+	_, err := repo.dbConn.Exec(`DELETE FROM patient_disease WHERE patient_id = $1 AND id = $2`, patientId, id)
+	return err
+}
+
+func (repo *DbSources) UpdatePatientDisease(c *gin.Context, p model.PatientDisease) error {
+	updDquery, err := utils.PrepareSQLUpdateStatement(p.Disease, *p.Disease.Id)
+	if err != nil {
+		return err
+	}
+	err = repo.execQuery(updDquery)
+	if err != nil {
+		return err
+	}
+	updPatDquery, err := utils.PrepareSQLUpdateStatement(p, *p.Id)
+	if err != nil {
+		return err
+	}
+	return repo.execQuery(updPatDquery)
+}

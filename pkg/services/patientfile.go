@@ -23,6 +23,9 @@ type PatService interface {
 	DeletePatientComment(c *gin.Context, id, commentId string) error
 
 	RegisterPatientDisease(c *gin.Context, p model.PatientDisease) error
+	GetPatientDiseases(c *gin.Context, patId string) ([]model.PatientDisease, error)
+	DeletePatientDisease(c *gin.Context, patId, diseaseId string) error
+	UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -33,10 +36,15 @@ type Db interface {
 	UpdatePatient(c *gin.Context, p model.Patient) error
 	SearchPatientByINSMatricule(c *gin.Context, id string) ([]model.Patient, error)
 	BatchLoadPatients(c *gin.Context, p []model.Patient) error
+
 	CreatePatientComment(c *gin.Context, p model.PatientComment) error
 	GetPatientComments(c *gin.Context, id string) ([]model.PatientComment, error)
 	DeletePatientComment(c *gin.Context, id, commentId string) error
+
 	RegisterPatientDisease(c *gin.Context, p model.PatientDisease) error
+	GetPatientDiseases(c *gin.Context, patId string) ([]model.PatientDisease, error)
+	DeletePatientDisease(c *gin.Context, patId, diseaseId string) error
+	UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error
 }
 
 type patService struct {
@@ -132,4 +140,16 @@ func (s *patService) DeletePatientComment(c *gin.Context, id, commentId string) 
 
 func (s *patService) RegisterPatientDisease(c *gin.Context, p model.PatientDisease) error {
 	return s.d.RegisterPatientDisease(c, p)
+}
+
+func (s *patService) GetPatientDiseases(c *gin.Context, patId string) ([]model.PatientDisease, error) {
+	return s.d.GetPatientDiseases(c, patId)
+}
+
+func (s *patService) DeletePatientDisease(c *gin.Context, patId, diseaseId string) error {
+	return s.d.DeletePatientDisease(c, patId, diseaseId)
+}
+
+func (s *patService) UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error {
+	return s.d.UpdatePatientDisease(c, patientDisease)
 }

@@ -30,8 +30,9 @@ type PatientHandler interface {
 	DeletePatientComment(c *gin.Context)
 
 	RegisterPatientDisease(c *gin.Context)
-	// GetPatientDiseases(c *gin.Context)
-	// DeletePatientDisease(c *gin.Context)
+	GetPatientDiseases(c *gin.Context)
+	DeletePatientDisease(c *gin.Context)
+	UpdatePatientDisease(c *gin.Context)
 }
 
 type patientHandler struct {
@@ -322,5 +323,57 @@ func (patientHandler *patientHandler) RegisterPatientDisease(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"status": 201, "msg": "patient disease registered"})
 }
 
-// GetPatientDiseases(c *gin.Context)
-// DeletePatientDisease(c *gin.Context)
+func (patientHandler *patientHandler) GetPatientDiseases(c *gin.Context) {
+	patId := c.Param("id")
+	diseases, err := patientHandler.patienfileService.GetPatientDiseases(c, patId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't get patient diseases", "error": err.Error()})
+		return
+	}
+	if len(diseases) == 0 {
+		c.JSON(http.StatusNoContent, gin.H{"status": 204, "message": "no patient diseases found"})
+		return
+	}
+	c.JSON(http.StatusOK, diseases)
+}
+
+func (patientHandler *patientHandler) DeletePatientDisease(c *gin.Context) {
+	patId := c.Param("id")
+	diseaseId := c.Param("patdiseaseid")
+	err := patientHandler.patienfileService.DeletePatientDisease(c, patId, diseaseId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't delete patient disease", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient disease deleted"})
+}
+
+func (patientHandler *patientHandler) UpdatePatientDisease(c *gin.Context) {
+	var patientDisease model.PatientDisease
+	patId := c.Param("id")
+	diseaseId := c.Param("diseaseid")
+	if err := c.BindJSON(&patientDisease); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "can't read patient disease", "error": err.Error()})
+		return
+	}
+	if patientDisease.Id == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient disease id not set"})
+		return
+	}
+	if patientDisease.PatientId == nil {
+		patientDisease.PatientId = &patId
+	}
+	if patientDisease.Disease.Id == nil {
+		patientDisease.Disease.Id = &diseaseId
+	}
+	if patId != *patientDisease.PatientId || diseaseId != *patientDisease.Disease.Id {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "msg": "patient id or disease id not matching"})
+		return
+	}
+	err := patientHandler.patienfileService.UpdatePatientDisease(c, patientDisease)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": 400, "message": "can't update patient disease", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "patient disease updated"})
+}
