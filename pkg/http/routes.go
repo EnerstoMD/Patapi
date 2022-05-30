@@ -62,6 +62,11 @@ func InitRoutes(router *gin.Engine, ph PatientHandler, ch CalendarHandler, uh Us
 			patient.GET(":id/disease", ph.GetPatientDiseases)
 			patient.DELETE(":id/disease/:patdiseaseid", ph.DeletePatientDisease)
 			patient.PATCH(":id/disease/:diseaseid", ph.UpdatePatientDisease)
+
+			patient.POST(":id/allergy", ph.RegisterPatientAllergy)
+			patient.GET(":id/allergy", ph.GetPatientAllergies)
+			patient.DELETE(":id/allergy/:patallergyid", ph.DeletePatientAllergy)
+			patient.PATCH(":id/allergy/:allergyid", ph.UpdatePatientAllergy)
 		}
 
 		calendar := v1.Group("calendar")

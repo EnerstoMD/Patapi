@@ -26,6 +26,10 @@ type PatService interface {
 	GetPatientDiseases(c *gin.Context, patId string) ([]model.PatientDisease, error)
 	DeletePatientDisease(c *gin.Context, patId, diseaseId string) error
 	UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error
+	RegisterPatientAllergy(c *gin.Context, p model.PatientAllergy) error
+	GetPatientAllergies(c *gin.Context, patId string) ([]model.PatientAllergy, error)
+	DeletePatientAllergy(c *gin.Context, patId, allergyId string) error
+	UpdatePatientAllergy(c *gin.Context, patientAllergy model.PatientAllergy) error
 }
 type Db interface {
 	GetAllPatients(c *gin.Context) ([]model.Patient, error)
@@ -45,6 +49,10 @@ type Db interface {
 	GetPatientDiseases(c *gin.Context, patId string) ([]model.PatientDisease, error)
 	DeletePatientDisease(c *gin.Context, patId, diseaseId string) error
 	UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error
+	RegisterPatientAllergy(c *gin.Context, p model.PatientAllergy) error
+	GetPatientAllergies(c *gin.Context, patId string) ([]model.PatientAllergy, error)
+	DeletePatientAllergy(c *gin.Context, patId, allergyId string) error
+	UpdatePatientAllergy(c *gin.Context, patientAllergy model.PatientAllergy) error
 }
 
 type patService struct {
@@ -152,4 +160,20 @@ func (s *patService) DeletePatientDisease(c *gin.Context, patId, diseaseId strin
 
 func (s *patService) UpdatePatientDisease(c *gin.Context, patientDisease model.PatientDisease) error {
 	return s.d.UpdatePatientDisease(c, patientDisease)
+}
+
+func (s *patService) RegisterPatientAllergy(c *gin.Context, p model.PatientAllergy) error {
+	return s.d.RegisterPatientAllergy(c, p)
+}
+
+func (s *patService) GetPatientAllergies(c *gin.Context, patId string) ([]model.PatientAllergy, error) {
+	return s.d.GetPatientAllergies(c, patId)
+}
+
+func (s *patService) DeletePatientAllergy(c *gin.Context, patId, allergyId string) error {
+	return s.d.DeletePatientAllergy(c, patId, allergyId)
+}
+
+func (s *patService) UpdatePatientAllergy(c *gin.Context, patientAllergy model.PatientAllergy) error {
+	return s.d.UpdatePatientAllergy(c, patientAllergy)
 }

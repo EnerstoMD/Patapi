@@ -35,6 +35,11 @@ type DbRepository interface {
 	RegisterPatientDisease(c *gin.Context, p model.PatientDisease) error
 	GetPatientDiseases(c *gin.Context, patientId string) ([]model.PatientDisease, error)
 	DeletePatientDisease(c *gin.Context, patientId, diseaseId string) error
+	UpdatePatientDisease(c *gin.Context, p model.PatientDisease) error
+	RegisterPatientAllergy(c *gin.Context, p model.PatientAllergy) error
+	GetPatientAllergies(c *gin.Context, patientId string) ([]model.PatientAllergy, error)
+	DeletePatientAllergy(c *gin.Context, patientId, allergyId string) error
+	UpdatePatientAllergy(c *gin.Context, p model.PatientAllergy) error
 
 	GetAllEvents(c *gin.Context) ([]model.Event, error)
 	CreateEvent(c *gin.Context, e model.Event) error

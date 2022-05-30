@@ -48,3 +48,20 @@ type PatientDisease struct {
 	InProgress *string `json:"in_progress" db:"in_progress"`
 	AddedBy    *string `json:"added_by" db:"added_by"`
 }
+
+type Allergy struct {
+	Id          *string `json:"id" db:"id"`
+	Name        *string `json:"name" db:"name"`
+	Description *string `json:"description" db:"description"`
+}
+
+type PatientAllergy struct {
+	Id         *string `json:"id" db:"id"`
+	PatientId  *string `json:"patient_id" db:"patient_id"`
+	Allergy    Allergy `json:"allergy"`
+	Comment    *string `json:"comment" db:"comment"`
+	StartDate  *string `json:"start_date" db:"start_date"`
+	EndDate    *string `json:"end_date" db:"end_date"`
+	InProgress *string `json:"in_progress" db:"in_progress"`
+	AddedBy    *string `json:"added_by" db:"added_by"`
+}
