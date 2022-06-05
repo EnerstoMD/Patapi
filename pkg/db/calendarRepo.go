@@ -21,19 +21,19 @@ func (repo *DbSources) GetAllEvents(ctx *gin.Context) (events []model.Event, err
 		if err != nil {
 			return events, err
 		}
-		query2 := "select * from patient where id in (select patient_id from event_patientgroup where event_id=" + *ev.Id + ")"
-		rows2, err := repo.dbConn.Queryx(query2)
-		if err != nil {
-			return events, err
-		}
-		for rows2.Next() {
-			p := model.Patient{}
-			err = rows2.StructScan(&p)
-			if err != nil {
-				return events, err
-			}
-			ev.ConsultedPatients = append(ev.ConsultedPatients, *p.Id)
-		}
+		// query2 := "select * from patient where id in (select patient_id from event_patientgroup where event_id=" + *ev.Id + ")"
+		// rows2, err := repo.dbConn.Queryx(query2)
+		// if err != nil {
+		// 	return events, err
+		// }
+		// for rows2.Next() {
+		// 	p := model.Patient{}
+		// 	err = rows2.StructScan(&p)
+		// 	if err != nil {
+		// 		return events, err
+		// 	}
+		// 	ev.ConsultedPatients = append(ev.ConsultedPatients, *p.Id)
+		// }
 		events = append(events, ev)
 	}
 	return events, err
